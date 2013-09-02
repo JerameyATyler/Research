@@ -406,7 +406,7 @@ public class AStar extends JPanel implements ActionListener
         return path;
     }
 
-    public Point acquireGoal(Point currentPoint)
+    public boolean acquireGoal(Point currentPoint, Robot r)
     {
         //Starting coordinates
         int x = currentPoint.x;
@@ -459,9 +459,18 @@ public class AStar extends JPanel implements ActionListener
                     //return those coordinates as Point.
                     if (!viewed[x][y])
                     {
-                        if (validateGoal(new Point(x, y)))
+                        //if (validateGoal(new Point(x, y)))
                         {
-                            return new Point(x, y);
+                            r.goal = new Point(x,y);
+                            boolean valid = aStar(currentPoint, r.goal, r);
+                            if(valid)
+                            {
+                                return true;
+                            }
+                            else
+                            {
+                                i++;
+                            }
                         }
                     } //If viewed at current coordinates has been viewed,
                     //increment counter
@@ -495,7 +504,7 @@ public class AStar extends JPanel implements ActionListener
          * Point
          */
 
-        return new Point();
+        return false;
     }
 
     public boolean validateGoal(Point point)
@@ -518,7 +527,7 @@ public class AStar extends JPanel implements ActionListener
         return false;
     }
 
-    public Stack<Point> aStar(Point start, Point finish, Robot robot)
+    public boolean aStar(Point start, Point finish, Robot robot)
     {
         ArrayList<Node> closedSet = new ArrayList();
         ArrayList<Node> openSet = new ArrayList();
@@ -550,7 +559,8 @@ public class AStar extends JPanel implements ActionListener
             if (current == goal)
             {
                 robot.hasGoal = true;
-                return createPath(current);
+                robot.path = createPath(goal);
+                return true;
             }
 
             openSet.remove(current);
@@ -581,14 +591,8 @@ public class AStar extends JPanel implements ActionListener
                     }
                 }
             }
-            System.out.println(closedSet.size());
         }
-        Stack<Point> path = new Stack();
-
-        path.add(new Point());
-        robot.finished = true;
-        robotsCompleted++;
-        return path;
+        return false;
     }
 
     public int nodeDistance(Node a, Node b)
@@ -1200,8 +1204,11 @@ public class AStar extends JPanel implements ActionListener
                 }
                 else if (!r.finished)
                 {
-                    r.goal = acquireGoal(r.current);
-                    r.path = aStar(r.current, r.goal, r);
+                    boolean needGoal = true;
+                    while (needGoal)
+                    {
+                        needGoal = !acquireGoal(r.current, r);
+                    }
                 }
             }
 
