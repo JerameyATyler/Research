@@ -138,16 +138,18 @@ public class MainWindow extends JFrame implements ActionListener
     @Override
     public void actionPerformed(ActionEvent e)
     {
-        randomViewed.setText("" + (randomPanel.getViewedElements()
-                / (totalElements * 1.0)) * 100);
+        DecimalFormat df = new DecimalFormat("#.000");
+        
+        randomViewed.setText("" + df.format((randomPanel.getViewedElements()
+                / (totalElements * 1.0)) * 100));
         randomMovements.setText("" + randomPanel.getMovements());
 
-        primaryViewed.setText("" + (primaryPanel.getViewedElements()
-                / (totalElements * 1.0)) * 100);
+        primaryViewed.setText("" + df.format((primaryPanel.getViewedElements()
+                / (totalElements * 1.0)) * 100));
         primaryMovements.setText("" + primaryPanel.getMovements());
 
-        aStarViewed.setText("" + (aStarPanel.getViewedElements()
-                / (totalElements * 1.0)) * 100);
+        aStarViewed.setText("" + df.format((aStarPanel.getViewedElements()
+                / (totalElements * 1.0)) * 100));
         aStarMovements.setText("" + aStarPanel.getMovements());
     }
 
@@ -228,29 +230,23 @@ public class MainWindow extends JFrame implements ActionListener
                         + parameters.environmentWidth);
                 out.println("Environment Height: "
                         + parameters.environmentHeight);
-                out.println("-----------------------------------");
                 out.println();
-                out.println("\t     Random|\tPrimary| A *");
-                out.println("-----------------------------------");
 
                 int totalElements = parameters.environmentHeight
                         * parameters.environmentWidth;
                 DecimalFormat df = new DecimalFormat("#.000");
 
-                out.println("% uncovered|\t"
-                        + df.format((randomPanel.getViewedElements()
+                out.println(df.format((randomPanel.getViewedElements()
                         / (totalElements * 1.0)) * 100)
-                        + "|\t"
+                        + "\t"
                         + df.format((primaryPanel.getViewedElements()
                         / (totalElements * 1.0)) * 100)
-                        + "|\t"
+                        + "\t"
                         + df.format((aStarPanel.getViewedElements()
                         / (totalElements * 1.0)) * 100));
-                out.println("Movements  |\t" + randomPanel.getMovements()
-                        + "|\t" + primaryPanel.getMovements()
-                        + "|\t" + aStarPanel.getMovements());
-                out.println("-----------------------------------");
-
+                out.println(randomPanel.getMovements()
+                        + "\t" + primaryPanel.getMovements()
+                        + "\t" + aStarPanel.getMovements());
 
                 out.close();
             }

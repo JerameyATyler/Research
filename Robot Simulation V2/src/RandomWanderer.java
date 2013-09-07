@@ -7,6 +7,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.geom.Arc2D;
 import java.util.ArrayList;
+import java.util.Random;
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import javax.swing.Timer;
@@ -22,6 +23,7 @@ public class RandomWanderer extends JPanel implements ActionListener
     private int totalElements;
     private Timer timer;
     ArrayList<Robot> robots = new ArrayList();
+    Random random = new Random(179424691);
 
     public RandomWanderer(Parameters params, boolean[][] occupied)
     {
@@ -163,6 +165,62 @@ public class RandomWanderer extends JPanel implements ActionListener
         }
         robot.setSensors();
     }
+    
+    public void decrementBearing(Robot robot)
+    {
+        switch (robot.bearing)
+        {
+            case 0:
+                robot.bearing = 7;
+                robot.sensor0Angle = 0;
+                robot.sensor1Angle = 315;
+                robot.sensor2Angle = 270;
+                break;
+            case 1:
+                robot.bearing = 0;
+                robot.sensor0Angle = 45;
+                robot.sensor1Angle = 0;
+                robot.sensor2Angle = 315;
+                break;
+            case 2:
+                robot.bearing = 1;
+                robot.sensor0Angle = 90;
+                robot.sensor1Angle = 45;
+                robot.sensor2Angle = 0;
+                break;
+            case 3:
+                robot.bearing = 2;
+                robot.sensor0Angle = 135;
+                robot.sensor1Angle = 90;
+                robot.sensor2Angle = 45;
+                break;
+            case 4:
+                robot.bearing = 3;
+                robot.sensor0Angle = 180;
+                robot.sensor1Angle = 135;
+                robot.sensor2Angle = 90;
+                break;                
+            case 5:
+                robot.bearing = 4;
+                robot.sensor0Angle = 225;
+                robot.sensor1Angle = 180;
+                robot.sensor2Angle = 135;
+                break;
+            case 6:
+                robot.bearing = 5;
+                robot.sensor0Angle = 270;
+                robot.sensor1Angle = 225;
+                robot.sensor2Angle = 180;
+                break;                
+            case 7:
+                robot.bearing = 6;
+                robot.sensor0Angle = 315;
+                robot.sensor1Angle = 270;
+                robot.sensor2Angle = 225;
+                break;
+        }
+        robot.setSensors();
+    }
 
     public void incrementDirection(Robot robot)
     {
@@ -291,7 +349,31 @@ public class RandomWanderer extends JPanel implements ActionListener
         }
     }
 
-    public void updateMapRotate(Robot robot)
+    public void updateMapRotateClockWise(Robot robot)
+    {
+        Arc2D.Double arc = new Arc2D.Double(Arc2D.PIE);
+        arc.setFrame(robot.sensor0.getFrame());
+        arc.setAngleStart(robot.sensor2.getAngleStart() + 45);
+        arc.setAngleExtent(135);
+
+        for (int i = (((int) arc.getMinX() < 0) ? 0 : (int) arc.getMinX()); i
+                < ((arc.getMaxX() >= params.environmentWidth)
+                ? params.environmentWidth : arc.getMaxX()); i++)
+        {
+            for (int j = (((int) arc.getMinY() < 0) ? 0 : (int) arc.getMinY());
+                    j < ((arc.getMaxY() >= params.environmentHeight)
+                    ? params.environmentHeight : arc.getMaxY()); j++)
+            {
+                if (arc.contains(i, j) && !viewed[i][j])
+                {
+                    viewed[i][j] = true;
+                    viewedElements++;
+                }
+            }
+        }
+    }
+    
+    public void updateMapRotateCounterClockWise(Robot robot)
     {
         Arc2D.Double arc = new Arc2D.Double(Arc2D.PIE);
         arc.setFrame(robot.sensor0.getFrame());
@@ -375,16 +457,21 @@ public class RandomWanderer extends JPanel implements ActionListener
         {
             for (Robot r : robots)
             {
-                boolean forward = (Math.random() > .495);
-                if ((forward && canIncrementDirection(r)) && !moveConflict(r))
+                int move = (random.nextInt(3));
+                if ((move == 0 && canIncrementDirection(r)) && !moveConflict(r))
                 {
                     incrementDirection(r);
                     updateMapForward();
                 }
-                else
+                else if(move == 1)
                 {
-                    updateMapRotate(r);
+                    updateMapRotateCounterClockWise(r);
                     incrementBearing(r);
+                }
+                else if(move == 2)
+                {
+                    updateMapRotateClockWise(r);
+                    decrementBearing(r);
                 }
             }
             movements++;
