@@ -58,7 +58,7 @@ public class RobotSim extends JFrame {
                 (int) Math.ceil(totalElements * params.obstacleDensity);
 
         Random random = new Random((params.seed != 0) ? params.seed : 2147483647);
-        System.out.println(params.seed);
+
         while (neededElements > occupiedElements) {
             int y = (int) (random.nextDouble() * params.environmentHeight);
             int x = (int) (random.nextDouble() * params.environmentWidth);

@@ -230,6 +230,8 @@ public class MainWindow extends JFrame implements ActionListener
                         + parameters.environmentWidth);
                 out.println("Environment Height: "
                         + parameters.environmentHeight);
+                out.println("Random Seed: "
+                        + parameters.seed);
                 out.println();
 
                 int totalElements = parameters.environmentHeight
