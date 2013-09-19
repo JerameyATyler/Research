@@ -63,6 +63,10 @@ public class ParameterSelectionDialog extends JDialog
     JFormattedTextField timeLimitField;
     private NumberFormat timeLimitFormat;
     int timeLimit;
+    //Field containing the seed
+    JFormattedTextField seedField;
+    private NumberFormat seedFormat;
+    int seed;
     //Show visual button
     JCheckBox isVisual = new JCheckBox("Show Visuals?");
     //Ok button
@@ -122,6 +126,11 @@ public class ParameterSelectionDialog extends JDialog
         timeLimitField.setColumns(10);
         timeLimitField.addPropertyChangeListener("value", this);
 
+        seedField = new JFormattedTextField(seedFormat);
+        seedField.setValue(new Integer(seed));
+        seedField.setColumns(10);
+        seedField.addPropertyChangeListener("value", this);
+        
         JPanel sliderPanel = new JPanel();
         JPanel buttonPanel = new JPanel();
 
@@ -134,7 +143,9 @@ public class ParameterSelectionDialog extends JDialog
         sliderPanel.add(obstacleSlider);
         sliderPanel.add(environmentWidthSlider);
         sliderPanel.add(environmentHeightSlider);
-        sliderPanel.add(new JLabel("Time Limit: "));
+        sliderPanel.add(new JLabel("Random Seed: "));
+        sliderPanel.add(seedField);
+        sliderPanel.add(new JLabel("Time Limit: "));        
         sliderPanel.add(timeLimitField);
 
         okButton = new JButton("OK");
@@ -146,7 +157,7 @@ public class ParameterSelectionDialog extends JDialog
         buttonPanel.add(okButton);
         buttonPanel.add(cancelButton);
 
-        this.setSize(400, 450);
+        this.setSize(400, 500);
         this.setTitle("Simulation Parameters");
         this.add(sliderPanel);
         this.add(buttonPanel);
@@ -176,6 +187,7 @@ public class ParameterSelectionDialog extends JDialog
             params.environmentHeight = (short) environmentHeightSlider.
                     getValue();
             params.timeLimit = timeLimit;
+            params.seed = seed;
             params.isVisual = true;
         }
         return okPressed;
@@ -220,6 +232,10 @@ public class ParameterSelectionDialog extends JDialog
         if (source == timeLimitField)
         {
             timeLimit = ((Number) timeLimitField.getValue()).intValue();
+        }
+        else if (source == seedField)
+        {
+            seed = ((Number) seedField.getValue()).intValue();
         }
     }
 }

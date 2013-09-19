@@ -14,4 +14,5 @@ public class Parameters
     public short environmentHeight;
     public int timeLimit;
     public boolean isVisual;
+    public int seed;
 }
