@@ -25,7 +25,7 @@ public class MainWindow extends JFrame implements ActionListener
     private JTabbedPane tabbedPane;
     private RandomWanderer randomPanel;
     private PrimaryMovement primaryPanel;
-    private AStar aStarPanel;
+    AStar aStarPanel;
     private Map mapPanel;
     private Timer timer;
     private JLabel randomViewed;
@@ -139,7 +139,7 @@ public class MainWindow extends JFrame implements ActionListener
     public void actionPerformed(ActionEvent e)
     {
         DecimalFormat df = new DecimalFormat("#.000");
-        
+
         randomViewed.setText("" + df.format((randomPanel.getViewedElements()
                 / (totalElements * 1.0)) * 100));
         randomMovements.setText("" + randomPanel.getMovements());
@@ -151,6 +151,56 @@ public class MainWindow extends JFrame implements ActionListener
         aStarViewed.setText("" + df.format((aStarPanel.getViewedElements()
                 / (totalElements * 1.0)) * 100));
         aStarMovements.setText("" + aStarPanel.getMovements());
+        if ((aStarPanel.getViewedElements()
+                / (totalElements * 1.0) * 100) >= 100)
+        {
+            StopButtonPressedListener sb = new StopButtonPressedListener();
+            sb.actionPerformed(e);
+            RobotSim sim = new RobotSim();
+            if (parameters.obstacleDensity == 0)
+            {
+                if (parameters.robotQuantity == 1)
+                {
+                    if (parameters.seedList.size() > 0)
+                    {
+                        parameters.robotQuantity = 4;
+                        parameters.obstacleDensity = .3;
+                        parameters.seed = parameters.seedList.get(0);
+                        parameters.seedList.remove(0);
+                    }
+                }
+                else
+                {
+                    parameters.robotQuantity -= 1;
+                    parameters.obstacleDensity = .3;
+                }
+            }
+            else if (parameters.obstacleDensity == .1)
+            {
+                parameters.obstacleDensity = 0;
+            }
+            else if (parameters.obstacleDensity == .2)
+            {
+                parameters.obstacleDensity = .1;
+            }
+            else if (parameters.obstacleDensity == .3)
+            {
+                parameters.obstacleDensity = .2;
+            }
+            sim.start(parameters);
+            this.dispose();
+        }
+
+
+    }
+
+    public void start()
+    {
+        RunButtonPressedListener rb = new RunButtonPressedListener();
+        rb.actionPerformed(null);
+
+        FFButtonPressedListener ff = new FFButtonPressedListener();
+        ff.actionPerformed(null);
     }
 
     class RunButtonPressedListener implements ActionListener

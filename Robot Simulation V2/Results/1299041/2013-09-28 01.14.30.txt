@@ -1,0 +1,10 @@
+-------Experiment Parameters-------
+Robot swarm size: 1
+Robot sensor distance: 10
+Obstacle density: 0.1%
+Environment Width: 100
+Environment Height: 100
+Random Seed: 1299041
+
+21.830	71.320	100.000
+1804	834	1795

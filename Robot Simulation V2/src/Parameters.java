@@ -1,4 +1,7 @@
 
+import java.util.ArrayList;
+
+
 /**
  * Object that contains the experiments parameters.
  *
@@ -15,4 +18,5 @@ public class Parameters
     public int timeLimit;
     public boolean isVisual;
     public int seed;
+    ArrayList<Integer> seedList = new ArrayList();
 }
