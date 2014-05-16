@@ -1,114 +1,46 @@
 
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.geom.Arc2D;
-import java.util.ArrayList;
-import javax.swing.BorderFactory;
-import javax.swing.JPanel;
-import javax.swing.Timer;
 
-public class PrimaryMovement extends JPanel implements ActionListener
+/**
+ * Implementation of a Navigation algorithm designed by the author. Robots will
+ * move forward as long as their path is not obstructed. If their path is
+ * obstructed the robot will rotate 45 degrees and reevaluate if their path is
+ * obstructed. If their path is unobstructed the robot will proceed forward and
+ * the process will repeat. If a robot performs a full 360 degree rotation it
+ * will determine that it has no available movements and will cease operations.
+ *
+ * @author Jeramey Tyler jeatyler@ius.edu
+ */
+public class PrimaryMovement extends NavigationLibrary
 {
 
-    private boolean[][] occupied;
-    private boolean[][] viewed;
-    private int viewedElements = 0;
-    private int movements = 0;
-    private Parameters params;
-    private int totalElements;
+    //The number of robots that have ceased operations
     private int robotsCompleted = 0;
-    private Timer timer;
-    ArrayList<Robot> robots = new ArrayList();
 
+    /**
+     * Constructor for Primary Movement algorithm. Accepts a list of parameters
+     * and the environment map as input.
+     *
+     * @param params   A Parameter object that will contain the experiment
+     *                 parameters
+     * @param occupied A boolean matrix representing the map of the environment
+     */
     public PrimaryMovement(Parameters params, boolean[][] occupied)
     {
-        timer = new Timer(100, this);
-
-        setBorder(BorderFactory.createLineBorder(Color.BLACK));
-        setSize(params.environmentWidth, params.environmentHeight);
-        this.params = params;
-        totalElements = params.environmentHeight * params.environmentWidth;
-
-        switch (params.robotQuantity)
-        {
-            case 4:
-                robots.add(new Robot(new Point(params.environmentWidth - 1,
-                        params.environmentHeight - 1), 135, 90, 45,
-                        params.sensorDistance));
-                robots.get(robots.size() - 1).bearing = 2;
-            case 3:
-                robots.add(new Robot(new Point(0, params.environmentHeight - 1),
-                        45, 0, 315,
-                        params.sensorDistance));
-                robots.get(robots.size() - 1).bearing = 0;
-            case 2:
-                robots.add(new Robot(new Point(params.environmentWidth - 1, 0),
-                        225, 180, 135,
-                        params.sensorDistance));
-                robots.get(robots.size() - 1).bearing = 4;
-            case 1:
-                robots.add(new Robot(new Point(0, 0), 315, 270, 225,
-                        params.sensorDistance));
-                robots.get(robots.size() - 1).bearing = 6;
-                break;
-            default:
-                robots.add(new Robot(new Point(0, 0), 315, 270, 225,
-                        params.sensorDistance));
-                robots.get(robots.size() - 1).bearing = 6;
-                break;
-        }
-
-        this.occupied = occupied.clone();
-        viewed = new boolean[params.environmentWidth][params.environmentHeight];
+        //Parameters are passed to the constructor of the super class
+        super(params, occupied);
     }
 
     /**
+     * Increments a robot's bearing by one and sets the sensor angles
+     * accordingly. Overrides method from parent class. Has added functionality
+     * of incrementing the count of a robot's rotations.
      *
-     * @return
+     * @param robot A Robot object representing the robot that needs its bearing
+     *              incremented
      */
-    public int getViewedElements()
-    {
-        return viewedElements;
-    }
-
-    /**
-     *
-     * @return
-     */
-    public int getMovements()
-    {
-        return movements;
-    }
-
-    /**
-     *
-     * @param delay
-     */
-    public void setTimer(int delay)
-    {
-        timer.setDelay(delay);
-    }
-
-    /**
-     *
-     */
-    public void startTimer()
-    {
-        timer.start();
-    }
-
-    /**
-     *
-     */
-    public void stopTimer()
-    {
-        timer.stop();
-    }
-
+    @Override
     public void incrementBearing(Robot robot)
     {
         switch (robot.bearing)
@@ -171,6 +103,16 @@ public class PrimaryMovement extends JPanel implements ActionListener
         }
     }
 
+    /**
+     * Increments a robot's bearing by one and sets the sensor angles
+     * accordingly. Overrides method from parent class. Has added
+     * functionality of resetting a robot's rotation count to 0 if a robot is
+     * able to increment its direction
+     *
+     * @param robot A Robot object representing the robot that needs its bearing
+     *              incremented
+     */
+    @Override
     public void incrementDirection(Robot robot)
     {
         switch (robot.bearing)
@@ -212,300 +154,145 @@ public class PrimaryMovement extends JPanel implements ActionListener
         robot.rotations = 0;
     }
 
-    public boolean canIncrementDirection(Robot robot)
-    {
-        switch (robot.bearing)
-        {
-            case 0:
-                return robot.current.x + 1 < params.environmentWidth;
-            case 1:
-                return robot.current.x + 1 < params.environmentWidth
-                        && robot.current.y - 1 >= 0;
-            case 2:
-                return robot.current.y - 1 >= 0;
-            case 3:
-                return robot.current.x - 1 >= 0
-                        && robot.current.y - 1 >= 0;
-            case 4:
-                return robot.current.x - 1 >= 0;
-            case 5:
-                return robot.current.x - 1 >= 0
-                        && robot.current.y + 1 < params.environmentWidth;
-            case 6:
-                return robot.current.y + 1 < params.environmentWidth;
-            case 7:
-                return robot.current.x + 1 < params.environmentWidth
-                        && robot.current.y + 1 < params.environmentWidth;
-            default:
-                return false;
-        }
-    }
-
-    public void updateMapForward()
-    {
-        for (Robot r : robots)
-        {
-            for (int i = (((int) r.sensor0.getMinX() < 0) ? 0 : (int) r.sensor0.
-                    getMinX()); i < ((r.sensor0.getMaxX()
-                    >= params.environmentWidth) ? params.environmentWidth
-                    : r.sensor0.getMaxX()); i++)
-            {
-                for (int j = (((int) r.sensor0.getMinY() < 0) ? 0
-                        : (int) r.sensor0.getMinY()); j < ((r.sensor0.getMaxY()
-                        >= params.environmentHeight) ? params.environmentHeight
-                        : r.sensor0.getMaxY()); j++)
-                {
-                    if (r.sensor0.contains(i, j) && !viewed[i][j])
-                    {
-                        viewed[i][j] = true;
-                        viewedElements++;
-                    }
-                }
-            }
-            for (int i = (((int) r.sensor1.getMinX() < 0) ? 0 : (int) r.sensor1.
-                    getMinX()); i < ((r.sensor1.getMaxX()
-                    >= params.environmentWidth) ? params.environmentWidth
-                    : r.sensor1.getMaxX()); i++)
-            {
-                for (int j = (((int) r.sensor1.getMinY() < 0) ? 0
-                        : (int) r.sensor1.getMinY()); j < ((r.sensor1.getMaxY()
-                        >= params.environmentHeight) ? params.environmentHeight
-                        : r.sensor1.getMaxY()); j++)
-                {
-                    if (r.sensor1.contains(i, j) && !viewed[i][j])
-                    {
-                        viewed[i][j] = true;
-                        viewedElements++;
-                    }
-                }
-            }
-            for (int i = (((int) r.sensor2.getMinX() < 0) ? 0 : (int) r.sensor2.
-                    getMinX()); i < ((r.sensor2.getMaxX()
-                    >= params.environmentWidth) ? params.environmentWidth
-                    : r.sensor2.getMaxX()); i++)
-            {
-                for (int j = (((int) r.sensor2.getMinY() < 0) ? 0
-                        : (int) r.sensor2.getMinY()); j < ((r.sensor2.getMaxY()
-                        >= params.environmentHeight) ? params.environmentHeight
-                        : r.sensor2.getMaxY()); j++)
-                {
-                    if (r.sensor2.contains(i, j) && !viewed[i][j])
-                    {
-                        viewed[i][j] = true;
-                        viewedElements++;
-                    }
-                }
-            }
-        }
-    }
-
-    public void updateMapRotate(Robot robot)
-    {
-        Arc2D.Double arc = new Arc2D.Double(Arc2D.PIE);
-        arc.setFrame(robot.sensor0.getFrame());
-        arc.setAngleStart(robot.sensor2.getAngleStart());
-        arc.setAngleExtent(135);
-
-        for (int i = (((int) arc.getMinX() < 0) ? 0 : (int) arc.getMinX()); i
-                < ((arc.getMaxX() >= params.environmentWidth)
-                ? params.environmentWidth : arc.getMaxX()); i++)
-        {
-            for (int j = (((int) arc.getMinY() < 0) ? 0 : (int) arc.getMinY());
-                    j < ((arc.getMaxY() >= params.environmentHeight)
-                    ? params.environmentHeight : arc.getMaxY()); j++)
-            {
-                if (arc.contains(i, j) && !viewed[i][j])
-                {
-                    viewed[i][j] = true;
-                    viewedElements++;
-                }
-            }
-        }
-    }
-
-    public boolean moveConflict(Robot robot)
-    {
-        Point point = new Point();
-        switch (robot.bearing)
-        {
-            case 0:
-                point.x = robot.current.x + 1;
-                point.y = robot.current.y;
-                break;
-            case 1:
-                point.x = robot.current.x + 1;
-                point.y = robot.current.y - 1;
-                break;
-            case 2:
-                point.x = robot.current.x;
-                point.y = robot.current.y - 1;
-                break;
-            case 3:
-                point.x = robot.current.x - 1;
-                point.y = robot.current.y - 1;
-                break;
-            case 4:
-                point.x = robot.current.x - 1;
-                point.y = robot.current.y;
-                break;
-            case 5:
-                point.x = robot.current.x - 1;
-                point.y = robot.current.y + 1;
-                break;
-            case 6:
-                point.x = robot.current.x;
-                point.y = robot.current.y + 1;
-                break;
-            case 7:
-                point.x = robot.current.x + 1;
-                point.y = robot.current.y + 1;
-                break;
-        }
-        if (occupied[point.x][point.y])
-        {
-            return true;
-        }
-        for (Robot r : robots)
-        {
-            if ((r.current.x == point.x) && (r.current.y == point.y))
-            {
-                return true;
-            }
-        }
-        return false;
-    }
-
+    /**
+     * Given a Robot, returns a boolean value representing whether or not a
+     * forward movement will reveal more of the environment
+     *
+     * @param robot A Robot object representing the robot in need of a forward
+     *              movement
+     *
+     * @return A boolean value representing whether or not a forward movement
+     *         will unveil more of the map
+     */
     public boolean moveReveal(Robot robot)
     {
+        //Create a robot and perform the move on it
         Robot temp = robot.clone();
         temp.bearing = robot.bearing;
         incrementDirection(temp);
 
-        for (int i = (((int) temp.sensor0.getMinX() < 0) ? 0
-                : (int) temp.sensor0.
-                getMinX()); i < ((temp.sensor0.getMaxX()
-                >= params.environmentWidth) ? params.environmentWidth
-                : temp.sensor0.getMaxX()); i++)
+        //For sensor0 of the temp robot check if any unviewed element is within
+        //its sensor range.
+        //Iterate through x axis
+        for (int i = (((int) temp.sensor0.getMinX() < 0) ? 0 :
+                (int) temp.sensor0.
+                getMinX()); i < ((temp.sensor0.getMaxX() >=
+                params.environmentWidth) ? params.environmentWidth :
+                temp.sensor0.getMaxX()); i++)
         {
-            for (int j = (((int) temp.sensor0.getMinY() < 0) ? 0
-                    : (int) temp.sensor0.getMinY()); j < ((temp.sensor0.
-                    getMaxY()
-                    >= params.environmentHeight) ? params.environmentHeight
-                    : temp.sensor0.getMaxY()); j++)
+            //Iterate through y axis
+            for (int j = (((int) temp.sensor0.getMinY() < 0) ? 0 :
+                    (int) temp.sensor0.getMinY()); j < ((temp.sensor0.
+                    getMaxY() >=
+                    params.environmentHeight) ? params.environmentHeight :
+                    temp.sensor0.getMaxY()); j++)
             {
+                //If the element at (i,j) has not been viewed and it is in the
+                //sensor range return true
                 if (temp.sensor0.contains(i, j) && !viewed[i][j])
                 {
                     return true;
                 }
             }
         }
-        for (int i = (((int) temp.sensor1.getMinX() < 0) ? 0
-                : (int) temp.sensor1.
-                getMinX()); i < ((temp.sensor1.getMaxX()
-                >= params.environmentWidth) ? params.environmentWidth
-                : temp.sensor1.getMaxX()); i++)
+        //For sensor1 of the temp robot check if any unviewed element is within
+        //its sensor range.
+        //Iterate through x axis
+        for (int i = (((int) temp.sensor1.getMinX() < 0) ? 0 :
+                (int) temp.sensor1.
+                getMinX()); i < ((temp.sensor1.getMaxX() >=
+                params.environmentWidth) ? params.environmentWidth :
+                temp.sensor1.getMaxX()); i++)
         {
-            for (int j = (((int) temp.sensor1.getMinY() < 0) ? 0
-                    : (int) temp.sensor1.getMinY()); j < ((temp.sensor1.
-                    getMaxY()
-                    >= params.environmentHeight) ? params.environmentHeight
-                    : temp.sensor1.getMaxY()); j++)
+            //Iterate through y axis
+            for (int j = (((int) temp.sensor1.getMinY() < 0) ? 0 :
+                    (int) temp.sensor1.getMinY()); j < ((temp.sensor1.
+                    getMaxY() >=
+                    params.environmentHeight) ? params.environmentHeight :
+                    temp.sensor1.getMaxY()); j++)
             {
+                //If the element at (i,j) has not been viewed and it is in the
+                //sensor range return true
                 if (temp.sensor1.contains(i, j) && !viewed[i][j])
                 {
                     return true;
                 }
             }
         }
-        for (int i = (((int) temp.sensor2.getMinX() < 0) ? 0
-                : (int) temp.sensor2.
-                getMinX()); i < ((temp.sensor2.getMaxX()
-                >= params.environmentWidth) ? params.environmentWidth
-                : temp.sensor2.getMaxX()); i++)
+        //For sensor1 of the temp robot check if any unviewed element is within
+        //its sensor range.
+        //Iterate through x axis
+        for (int i = (((int) temp.sensor2.getMinX() < 0) ? 0 :
+                (int) temp.sensor2.
+                getMinX()); i < ((temp.sensor2.getMaxX() >=
+                params.environmentWidth) ? params.environmentWidth :
+                temp.sensor2.getMaxX()); i++)
         {
-            for (int j = (((int) temp.sensor2.getMinY() < 0) ? 0
-                    : (int) temp.sensor2.getMinY()); j < ((temp.sensor2.
-                    getMaxY()
-                    >= params.environmentHeight) ? params.environmentHeight
-                    : temp.sensor2.getMaxY()); j++)
+            //Iterate through y axis
+            for (int j = (((int) temp.sensor2.getMinY() < 0) ? 0 :
+                    (int) temp.sensor2.getMinY()); j < ((temp.sensor2.
+                    getMaxY() >=
+                    params.environmentHeight) ? params.environmentHeight :
+                    temp.sensor2.getMaxY()); j++)
             {
+                //If the element at (i,j) has not been viewed and it is in the
+                //sensor range return true
                 if (temp.sensor2.contains(i, j) && !viewed[i][j])
                 {
                     return true;
                 }
             }
         }
-
+        //If no unviewed element exists return false
         return false;
     }
 
+    /**
+     * Implemented from parent class. Whenever the timer event fires this method
+     * will be called.
+     * Contains the logic for the algorithm
+     *
+     * @param e An ActionEvent representing a tick of the timer.
+     */
     @Override
     public void actionPerformed(ActionEvent e)
     {
-        if ((params.timeLimit == 0 || movements < params.timeLimit)
-                && viewedElements < totalElements
-                && robotsCompleted != robots.size())
+        //Perform only if the time limit has not been reached, there still 
+        //exists a robot that has not ceased operations, and there are still 
+        //elements that need to be viewed
+        if ((params.timeLimit == 0 || movements < params.timeLimit) &&
+                viewedElements < totalElements &&
+                robotsCompleted != robots.size())
         {
+            //Perform operations for every robot
             for (Robot r : robots)
             {
+                //Exclude robots who have completed 
+                //operations
                 if (!r.finished)
                 {
-                    if (canIncrementDirection(r) && moveReveal(r)
-                            && !moveConflict(r))
+                    //If a robot can move forward and reveal more of the
+                    //environemnt increment the direction and update the map
+                    if (canIncrementDirection(r) && moveReveal(r) &&
+                            !moveConflict(r))
                     {
                         incrementDirection(r);
                         updateMapForward();
                     }
+                    //If a robot cannot move forward or reveal more of the 
+                    //environment rotate counterclockwise and incremente the
+                    //robot's bearing
                     else
                     {
-                        updateMapRotate(r);
+                        updateMapRotateCounterClockWise(r);
                         incrementBearing(r);
                     }
                 }
             }
+            //Increment the count of movements
             movements++;
         }
-
+        //repaint the map including robot positions and sensors
         repaint();
-    }
-
-    @Override
-    protected void paintComponent(Graphics g)
-    {
-        super.paintComponent(g);
-        for (int i = 0; i < viewed.length; i++)
-        {
-            for (int j = 0; j < viewed[i].length; j++)
-            {
-                if (viewed[i][j] && occupied[i][j])
-                {
-                    g.setColor(Color.BLACK);
-                    g.drawLine(i, j, i, j);
-                }
-                else if (viewed[i][j])
-                {
-                    g.setColor(Color.WHITE);
-                    g.drawLine(i, j, i, j);
-                }
-                else
-                {
-                    g.setColor(Color.DARK_GRAY);
-                    g.drawLine(i, j, i, j);
-                }
-            }
-        }
-
-        Graphics2D g2 = (Graphics2D) g;
-        for (Robot r : robots)
-        {
-
-            g2.setColor(Color.GREEN);
-            g2.fill(r.sensor0);
-            g2.fill(r.sensor1);
-            g2.fill(r.sensor2);
-
-            g2.setColor(Color.RED);
-            g2.drawLine(r.current.x, r.current.y, r.current.x, r.current.y);
-        }
     }
 }

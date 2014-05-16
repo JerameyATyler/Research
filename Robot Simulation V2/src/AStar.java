@@ -1,134 +1,56 @@
 
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.geom.Arc2D;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Stack;
-import javax.swing.BorderFactory;
-import javax.swing.JPanel;
-import javax.swing.Timer;
 
-public class AStar extends JPanel implements ActionListener
+/**
+ * Implementation of A* pathfinding algorithm. Goal is found by selecting the
+ * closest point on the map that has not been previously viewed.
+ *
+ * @author Jeramey Tyler jeatyler@ius.edu
+ */
+public class AStar extends NavigationLibrary
 {
 
-    private boolean[][] occupied;
-    private boolean[][] viewed;
-    private int viewedElements = 0;
-    private int movements = 0;
-    private Parameters params;
-    private int totalElements;
-    private int robotsCompleted = 0;
-    private Timer timer;
-    ArrayList<Robot> robots = new ArrayList();
-
+    /**
+     * Constructor for A* algorithm. Accepts a list of parameters and the
+     * environment map as input.
+     *
+     * @param params   A Parameters object that will contain the experiment
+     *                 parameters.
+     * @param occupied A boolean matrix representing the map of the environment
+     */
     public AStar(Parameters params, boolean[][] occupied)
     {
-        timer = new Timer(100, this);
-
-        setBorder(BorderFactory.createLineBorder(Color.BLACK));
-        setSize(params.environmentWidth, params.environmentHeight);
-        this.params = params;
-        totalElements = params.environmentHeight * params.environmentWidth;
-
-        switch (params.robotQuantity)
-        {
-            case 4:
-                robots.add(new Robot(new Point(params.environmentWidth - 1,
-                        params.environmentHeight - 1), 135, 90, 45,
-                        params.sensorDistance));
-                robots.get(robots.size() - 1).bearing = 2;
-            case 3:
-                robots.add(new Robot(new Point(0, params.environmentHeight - 1),
-                        45, 0, 315,
-                        params.sensorDistance));
-                robots.get(robots.size() - 1).bearing = 0;
-            case 2:
-                robots.add(new Robot(new Point(params.environmentWidth - 1, 0),
-                        225, 180, 135,
-                        params.sensorDistance));
-                robots.get(robots.size() - 1).bearing = 4;
-            case 1:
-                robots.add(new Robot(new Point(0, 0), 315, 270, 225,
-                        params.sensorDistance));
-                robots.get(robots.size() - 1).bearing = 6;
-                break;
-            default:
-                robots.add(new Robot(new Point(0, 0), 315, 270, 225,
-                        params.sensorDistance));
-                robots.get(robots.size() - 1).bearing = 6;
-                break;
-        }
-
-        this.occupied = occupied.clone();
-        viewed = new boolean[params.environmentWidth][params.environmentHeight];
-        for (Robot r : robots)
-        {
-            viewed[r.current.x][r.current.y] = true;
-            updateMapForward(r);
-        }
-
+        //Parameters are passed to the constructor of the super class
+        super(params, occupied);
     }
 
     /**
+     * Updates the map within the sensor range for a single robot moving forward
      *
-     * @return
+     * @param r A Robot object representing the robot that is being incremented
      */
-    public int getViewedElements()
-    {
-        return viewedElements;
-    }
-
-    /**
-     *
-     * @return
-     */
-    public int getMovements()
-    {
-        return movements;
-    }
-
-    /**
-     *
-     * @param delay
-     */
-    public void setTimer(int delay)
-    {
-        timer.setDelay(delay);
-    }
-
-    /**
-     *
-     */
-    public void startTimer()
-    {
-        timer.start();
-    }
-
-    /**
-     *
-     */
-    public void stopTimer()
-    {
-        timer.stop();
-    }
-
     public void updateMapForward(Robot r)
     {
+        //Update the map for sensor 0
+        //Increment through the x axis
         for (int i = (((int) r.sensor0.getMinX() < 0) ? 0 : (int) r.sensor0.
-                getMinX()); i < ((r.sensor0.getMaxX()
-                >= params.environmentWidth) ? params.environmentWidth
-                : r.sensor0.getMaxX()); i++)
+                getMinX()); i < ((r.sensor0.getMaxX() >=
+                params.environmentWidth) ? params.environmentWidth :
+                r.sensor0.getMaxX()); i++)
         {
-            for (int j = (((int) r.sensor0.getMinY() < 0) ? 0
-                    : (int) r.sensor0.getMinY()); j < ((r.sensor0.getMaxY()
-                    >= params.environmentHeight) ? params.environmentHeight
-                    : r.sensor0.getMaxY()); j++)
+            //Increment through the y axis
+            for (int j = (((int) r.sensor0.getMinY() < 0) ? 0 :
+                    (int) r.sensor0.getMinY()); j < ((r.sensor0.getMaxY() >=
+                    params.environmentHeight) ? params.environmentHeight :
+                    r.sensor0.getMaxY()); j++)
             {
+                //If a point is in the sensor's range and it has not been
+                //viewed previously, mark it as viewed
                 if (r.sensor0.contains(i, j) && !viewed[i][j])
                 {
                     viewed[i][j] = true;
@@ -136,16 +58,21 @@ public class AStar extends JPanel implements ActionListener
                 }
             }
         }
+        //Update the map for sensor 1
+        //Increment through the x axis
         for (int i = (((int) r.sensor1.getMinX() < 0) ? 0 : (int) r.sensor1.
-                getMinX()); i < ((r.sensor1.getMaxX()
-                >= params.environmentWidth) ? params.environmentWidth
-                : r.sensor1.getMaxX()); i++)
+                getMinX()); i < ((r.sensor1.getMaxX() >=
+                params.environmentWidth) ? params.environmentWidth :
+                r.sensor1.getMaxX()); i++)
         {
-            for (int j = (((int) r.sensor1.getMinY() < 0) ? 0
-                    : (int) r.sensor1.getMinY()); j < ((r.sensor1.getMaxY()
-                    >= params.environmentHeight) ? params.environmentHeight
-                    : r.sensor1.getMaxY()); j++)
+            //Increment through the y axis
+            for (int j = (((int) r.sensor1.getMinY() < 0) ? 0 :
+                    (int) r.sensor1.getMinY()); j < ((r.sensor1.getMaxY() >=
+                    params.environmentHeight) ? params.environmentHeight :
+                    r.sensor1.getMaxY()); j++)
             {
+                //If a point is in the sensor's range and it has not been
+                //viewed previously, mark it as viewed
                 if (r.sensor1.contains(i, j) && !viewed[i][j])
                 {
                     viewed[i][j] = true;
@@ -153,16 +80,21 @@ public class AStar extends JPanel implements ActionListener
                 }
             }
         }
+        //Update the map for sensor 2
+        //Increment through the x axis
         for (int i = (((int) r.sensor2.getMinX() < 0) ? 0 : (int) r.sensor2.
-                getMinX()); i < ((r.sensor2.getMaxX()
-                >= params.environmentWidth) ? params.environmentWidth
-                : r.sensor2.getMaxX()); i++)
+                getMinX()); i < ((r.sensor2.getMaxX() >=
+                params.environmentWidth) ? params.environmentWidth :
+                r.sensor2.getMaxX()); i++)
         {
-            for (int j = (((int) r.sensor2.getMinY() < 0) ? 0
-                    : (int) r.sensor2.getMinY()); j < ((r.sensor2.getMaxY()
-                    >= params.environmentHeight) ? params.environmentHeight
-                    : r.sensor2.getMaxY()); j++)
+            //Increment through the y axis
+            for (int j = (((int) r.sensor2.getMinY() < 0) ? 0 :
+                    (int) r.sensor2.getMinY()); j < ((r.sensor2.getMaxY() >=
+                    params.environmentHeight) ? params.environmentHeight :
+                    r.sensor2.getMaxY()); j++)
             {
+                //If a point is in the sensor's range and it has not been
+                //viewed previously, mark it as viewed
                 if (r.sensor2.contains(i, j) && !viewed[i][j])
                 {
                     viewed[i][j] = true;
@@ -170,12 +102,14 @@ public class AStar extends JPanel implements ActionListener
                 }
             }
         }
+
+        //Count the number of elements in the environment that have been viewed
         viewedElements = 0;
-        for (int i = 0; i < viewed.length; i++)
+        for (boolean[] viewed1 : viewed)
         {
-            for (int j = 0; j < viewed[i].length; j++)
+            for (int j = 0; j < viewed1.length; j++)
             {
-                if (viewed[i][j])
+                if (viewed1[j])
                 {
                     viewedElements++;
                 }
@@ -183,21 +117,37 @@ public class AStar extends JPanel implements ActionListener
         }
     }
 
+    /**
+     * Updates the map within the sensor range for a single robot rotating
+     *
+     * @param robot      A Robot object representing the robot that is being
+     *                   incremented
+     * @param angleStart An int representing the angle the of the rightmost ray
+     *                   of sensor 0
+     */
     public void updateMapRotate(Robot robot, int angleStart)
     {
+        //Create Arc2D to allow iteration through points only inside of sensors.
+        //A 45 degree rotation will cause the sensors to sweep 135 degree area,
+        //excluding the spread of the sensors
         Arc2D.Double arc = new Arc2D.Double(Arc2D.PIE);
         arc.setFrame(robot.sensor0.getFrame());
         arc.setAngleStart(angleStart);
         arc.setAngleExtent(135);
 
-        for (int i = (((int) arc.getMinX() < 0) ? 0 : (int) arc.getMinX()); i
-                < ((arc.getMaxX() >= params.environmentWidth)
-                ? params.environmentWidth : arc.getMaxX()); i++)
+        //Update the map for arc
+        //Increment through the x axis
+        for (int i = (((int) arc.getMinX() < 0) ? 0 : (int) arc.getMinX()); i <
+                ((arc.getMaxX() >= params.environmentWidth) ?
+                params.environmentWidth : arc.getMaxX()); i++)
         {
+            //Increment through the y axis
             for (int j = (((int) arc.getMinY() < 0) ? 0 : (int) arc.getMinY());
-                    j < ((arc.getMaxY() >= params.environmentHeight)
-                    ? params.environmentHeight : arc.getMaxY()); j++)
+                    j < ((arc.getMaxY() >= params.environmentHeight) ?
+                    params.environmentHeight : arc.getMaxY()); j++)
             {
+                //If a point is in the arc's range and it has not been
+                //viewed previously, mark it as viewed
                 if (arc.contains(i, j) && !viewed[i][j])
                 {
                     viewed[i][j] = true;
@@ -205,8 +155,10 @@ public class AStar extends JPanel implements ActionListener
                 }
             }
         }
+        //Reset the angle of the robot's sensors to the new angle
         robot.setSensors();
 
+        //Count the number of elements in the environment that have been viewed
         viewedElements = 0;
         for (int i = 0; i < viewed.length; i++)
         {
@@ -218,58 +170,6 @@ public class AStar extends JPanel implements ActionListener
                 }
             }
         }
-    }
-
-    public boolean moveConflict(Robot robot)
-    {
-        Point point = new Point();
-        switch (robot.bearing)
-        {
-            case 0:
-                point.x = robot.current.x + 1;
-                point.y = robot.current.y;
-                break;
-            case 1:
-                point.x = robot.current.x + 1;
-                point.y = robot.current.y - 1;
-                break;
-            case 2:
-                point.x = robot.current.x;
-                point.y = robot.current.y - 1;
-                break;
-            case 3:
-                point.x = robot.current.x - 1;
-                point.y = robot.current.y - 1;
-                break;
-            case 4:
-                point.x = robot.current.x - 1;
-                point.y = robot.current.y;
-                break;
-            case 5:
-                point.x = robot.current.x - 1;
-                point.y = robot.current.y + 1;
-                break;
-            case 6:
-                point.x = robot.current.x;
-                point.y = robot.current.y + 1;
-                break;
-            case 7:
-                point.x = robot.current.x + 1;
-                point.y = robot.current.y + 1;
-                break;
-        }
-        if (occupied[point.x][point.y])
-        {
-            return true;
-        }
-        for (Robot r : robots)
-        {
-            if ((r.current.x == point.x) && (r.current.y == point.y))
-            {
-                return true;
-            }
-        }
-        return false;
     }
 
     /**
@@ -278,6 +178,7 @@ public class AStar extends JPanel implements ActionListener
      *
      * @param parent The node that will act as the parent node for each node in
      *               the neighbor list
+     * @param goal
      * @param matrix Matrix of Nodes representing the environment
      *
      * @return An array list of Nodes representing the neighbors of the given
@@ -290,13 +191,12 @@ public class AStar extends JPanel implements ActionListener
 
         //The following section will check if a proposed neighbor is valid, 
         //and if so, create a neighbor Node and calculate its cost
-
         //Neighbor to the South
         if (parent.getY() + 1 < params.environmentHeight)
         {
-            if ((viewed[parent.getX()][parent.getY() + 1]
-                    && !occupied[parent.getX()][parent.getY() + 1])
-                    || (goal == matrix[parent.getX()][parent.getY() + 1]))
+            if ((viewed[parent.getX()][parent.getY() + 1] &&
+                    !occupied[parent.getX()][parent.getY() + 1]) ||
+                    (goal == matrix[parent.getX()][parent.getY() + 1]))
             {
                 Node node = matrix[parent.getX()][parent.getY() + 1];
                 node.calculateG(parent);
@@ -304,12 +204,12 @@ public class AStar extends JPanel implements ActionListener
             }
         }
         //Neighbor to the Southeast
-        if ((parent.getX() + 1 < params.environmentWidth) && (parent.getY()
-                + 1 < params.environmentHeight))
+        if ((parent.getX() + 1 < params.environmentWidth) && (parent.getY() +
+                1 < params.environmentHeight))
         {
-            if ((viewed[parent.getX() + 1][parent.getY() + 1]
-                    && !occupied[parent.getX() + 1][parent.getY() + 1])
-                    || (goal == matrix[parent.getX() + 1][parent.getY() + 1]))
+            if ((viewed[parent.getX() + 1][parent.getY() + 1] &&
+                    !occupied[parent.getX() + 1][parent.getY() + 1]) ||
+                    (goal == matrix[parent.getX() + 1][parent.getY() + 1]))
             {
                 Node node = matrix[parent.getX() + 1][parent.getY() + 1];
                 node.calculateG(parent);
@@ -319,9 +219,9 @@ public class AStar extends JPanel implements ActionListener
         //Neighbor to the East
         if (parent.getX() + 1 < params.environmentWidth)
         {
-            if ((viewed[parent.getX() + 1][parent.getY()]
-                    && !occupied[parent.getX() + 1][parent.getY()])
-                    || (goal == matrix[parent.getX() + 1][parent.getY()]))
+            if ((viewed[parent.getX() + 1][parent.getY()] &&
+                    !occupied[parent.getX() + 1][parent.getY()]) ||
+                    (goal == matrix[parent.getX() + 1][parent.getY()]))
             {
                 Node node = matrix[parent.getX() + 1][parent.getY()];
                 node.calculateG(parent);
@@ -329,12 +229,12 @@ public class AStar extends JPanel implements ActionListener
             }
         }
         //Neighbor to the Northeast        
-        if ((parent.getX() + 1 < params.environmentWidth)
-                && (parent.getY() - 1 >= 0))
+        if ((parent.getX() + 1 < params.environmentWidth) &&
+                (parent.getY() - 1 >= 0))
         {
-            if ((viewed[parent.getX() + 1][parent.getY() - 1]
-                    && !occupied[parent.getX() + 1][parent.getY() - 1])
-                    || (goal == matrix[parent.getX() + 1][parent.getY() - 1]))
+            if ((viewed[parent.getX() + 1][parent.getY() - 1] &&
+                    !occupied[parent.getX() + 1][parent.getY() - 1]) ||
+                    (goal == matrix[parent.getX() + 1][parent.getY() - 1]))
             {
                 Node node = matrix[parent.getX() + 1][parent.getY() - 1];
                 node.calculateG(parent);
@@ -344,9 +244,9 @@ public class AStar extends JPanel implements ActionListener
         //Neighbor to the North
         if (parent.getY() - 1 >= 0)
         {
-            if ((viewed[parent.getX()][parent.getY() - 1]
-                    && !occupied[parent.getX()][parent.getY() - 1])
-                    || (goal == matrix[parent.getX()][parent.getY() - 1]))
+            if ((viewed[parent.getX()][parent.getY() - 1] &&
+                    !occupied[parent.getX()][parent.getY() - 1]) ||
+                    (goal == matrix[parent.getX()][parent.getY() - 1]))
             {
                 Node node = matrix[parent.getX()][parent.getY() - 1];
                 node.calculateG(parent);
@@ -356,9 +256,9 @@ public class AStar extends JPanel implements ActionListener
         //Neighbor to the Northwest
         if ((parent.getX() - 1 >= 0) && (parent.getY() - 1 >= 0))
         {
-            if ((viewed[parent.getX() - 1][parent.getY() - 1]
-                    && !occupied[parent.getX() - 1][parent.getY() - 1])
-                    || (goal == matrix[parent.getX() - 1][parent.getY() - 1]))
+            if ((viewed[parent.getX() - 1][parent.getY() - 1] &&
+                    !occupied[parent.getX() - 1][parent.getY() - 1]) ||
+                    (goal == matrix[parent.getX() - 1][parent.getY() - 1]))
             {
                 Node node = matrix[parent.getX() - 1][parent.getY() - 1];
                 node.calculateG(parent);
@@ -368,9 +268,9 @@ public class AStar extends JPanel implements ActionListener
         //Neighbor to the West
         if (parent.getX() - 1 >= 0)
         {
-            if ((viewed[parent.getX() - 1][parent.getY()]
-                    && !occupied[parent.getX() - 1][parent.getY()])
-                    || (goal == matrix[parent.getX() - 1][parent.getY()]))
+            if ((viewed[parent.getX() - 1][parent.getY()] &&
+                    !occupied[parent.getX() - 1][parent.getY()]) ||
+                    (goal == matrix[parent.getX() - 1][parent.getY()]))
             {
                 Node node = matrix[parent.getX() - 1][parent.getY()];
                 node.calculateG(parent);
@@ -378,12 +278,12 @@ public class AStar extends JPanel implements ActionListener
             }
         }
         //Neighbor to the Southwest
-        if ((parent.getX() - 1 >= 0)
-                && (parent.getY() + 1 < params.environmentHeight))
+        if ((parent.getX() - 1 >= 0) &&
+                (parent.getY() + 1 < params.environmentHeight))
         {
-            if ((viewed[parent.getX() - 1][parent.getY() + 1]
-                    && !occupied[parent.getX() - 1][parent.getY() + 1])
-                    || (goal == matrix[parent.getX() - 1][parent.getY() + 1]))
+            if ((viewed[parent.getX() - 1][parent.getY() + 1] &&
+                    !occupied[parent.getX() - 1][parent.getY() + 1]) ||
+                    (goal == matrix[parent.getX() - 1][parent.getY() + 1]))
             {
                 Node node = matrix[parent.getX() - 1][parent.getY() + 1];
                 node.calculateG(parent);
@@ -394,10 +294,24 @@ public class AStar extends JPanel implements ActionListener
         return list;
     }
 
+    /**
+     * After a path has been found, given the end point of the path creates a
+     * list of points to move through. End point is pushed onto a stack. The
+     * parent of that point is pushed onto the stack. The parent of the parent
+     * is pushed onto the stack. This process is repeated until the starting
+     * point is left.
+     *
+     * @param node A Node object representing the end point of the path
+     *
+     * @return A Stack of Point objects representing the points on the map the
+     *         robot must navigate through to reach the goal from its current point
+     */
     private Stack<Point> createPath(Node node)
     {
-
+        //Create stack
         Stack<Point> path = new Stack();
+
+        //Iterate through the nodes and add their points to the stack
         while ((node.getParent()) != null)
         {
             path.push(new Point(node.getX(), node.getY()));
@@ -406,6 +320,20 @@ public class AStar extends JPanel implements ActionListener
         return path;
     }
 
+    /**
+     * Given a robot and its current position the robot will be assigned a goal
+     * if a valid goal exists. A boolean value will be returned representing
+     * whether or not a valid goal was found.
+     *
+     * @param currentPoint A Point object representing a robot's current
+     *                     position on the map
+     * @param r            A Robot object representing the robot that needs a
+     *                     goal
+     *
+     * @return Returns a boolean value representing whether or not a valid goal
+     *         has been found
+     */
+    @Override
     public boolean acquireGoal(Point currentPoint, Robot r)
     {
         //Starting coordinates
@@ -452,18 +380,17 @@ public class AStar extends JPanel implements ActionListener
                     j++)
             {
                 //Check if current coordinates are in bounds of viewed
-                if (!(x < 0 || y < 0
-                        || x >= viewed.length || y >= viewed[x].length))
+                if (!(x < 0 || y < 0 ||
+                        x >= viewed.length || y >= viewed[x].length))
                 {
                     //If viewed at current coordinates has not been viewed, 
                     //return those coordinates as Point.
                     if (!viewed[x][y])
                     {
-                        //if (validateGoal(new Point(x, y)))
                         {
-                            r.goal = new Point(x,y);
+                            r.goal = new Point(x, y);
                             boolean valid = aStar(currentPoint, r.goal, r);
-                            if(valid)
+                            if (valid)
                             {
                                 return true;
                             }
@@ -507,28 +434,22 @@ public class AStar extends JPanel implements ActionListener
         return false;
     }
 
-    public boolean validateGoal(Point point)
-    {
-        for (int i = ((point.x - 1 < 0) ? 0 : point.x - 1);
-                i <= ((point.x + 1 >= params.environmentWidth)
-                ? point.x : point.x + 1); i++)
-        {
-            for (int j = ((point.y - 1 < 0) ? 0 : point.y - 1);
-                    j <= ((point.y + 1 >= params.environmentHeight)
-                    ? point.y : point.y + 1); j++)
-            {
-                if (viewed[i][j] && !occupied[i][j])
-                {
-                    return true;
-                }
-            }
-        }
-
-        return false;
-    }
-
+    /**
+     * Implementation of the A* pathfinding algorithm. Given a robot, a starting
+     * point, and an end point a boolean value is returned representing whether
+     * or not a path exists.
+     *
+     * @param start  A Point object representing the point on the map where the
+     *               path will start
+     * @param finish A Point object representing the point on the map where the
+     *               path will end
+     * @param robot  A Robot object representing the robot that needs a path
+     *
+     * @return A boolean value representing whether or not a path exists
+     */
     public boolean aStar(Point start, Point finish, Robot robot)
     {
+
         ArrayList<Node> closedSet = new ArrayList();
         ArrayList<Node> openSet = new ArrayList();
 
@@ -595,21 +516,46 @@ public class AStar extends JPanel implements ActionListener
         return false;
     }
 
+    /**
+     * Given two nodes returns the distance between them using the Pythagoras
+     * theorem
+     *
+     * @param a A Node object representing the first point in the Pythagoras
+     *          theorem
+     *
+     * @param b A Node object representing the second point in the Pythagoras
+     *          theorem
+     *
+     * @return Returns an int value with is the truncated c value in the
+     *         Pythagoras theorem
+     */
     public int nodeDistance(Node a, Node b)
     {
-        return (int) Math.sqrt((Math.abs(a.getX() - b.getX()))
-                + (Math.abs(a.getY() - b.getY())));
+        //Pythagoras theorem
+        return (int) Math.sqrt((Math.abs(a.getX() - b.getX())) +
+                (Math.abs(a.getY() - b.getY())));
     }
 
+    /**
+     * Give a robot, the robot's bearing is adjusted to match its next movement
+     *
+     * @param r A Robot object representing the robot who's bearing is to be
+     *          adjusted
+     */
     public void adjustBearing(Robot r)
     {
-        Point next = ((!r.path.isEmpty() || r.path.size() > 0)
-                ? r.path.peek() : r.goal);
+        //Get the point the robot needs to face
+        Point next = ((!r.path.isEmpty() || r.path.size() > 0) ?
+                r.path.peek() : r.goal);
+        //The robot's current point
         Point curr = r.current;
 
+        //Increment bearing
         switch (r.bearing)
         {
+            //Robot facing 0 degrees
             case 0:
+                //Next point at bearing 0
                 if (next.x > curr.x && next.y == curr.y)
                 {
                     r.bearing = 0;
@@ -617,6 +563,7 @@ public class AStar extends JPanel implements ActionListener
                     r.sensor1Angle = 0;
                     r.sensor2Angle = 315;
                 }
+                //Next point at bearing 1
                 else if (next.x > curr.x && next.y < curr.y)
                 {
                     r.bearing = 1;
@@ -625,6 +572,7 @@ public class AStar extends JPanel implements ActionListener
                     r.sensor1Angle = 45;
                     r.sensor2Angle = 0;
                 }
+                //Next point at bearing 1
                 else if (next.x == curr.x && next.y < curr.y)
                 {
                     r.bearing = 1;
@@ -633,6 +581,7 @@ public class AStar extends JPanel implements ActionListener
                     r.sensor1Angle = 45;
                     r.sensor2Angle = 0;
                 }
+                //Next point at bearing 1
                 else if (next.x < curr.x && next.y < curr.y)
                 {
                     r.bearing = 1;
@@ -641,6 +590,7 @@ public class AStar extends JPanel implements ActionListener
                     r.sensor1Angle = 45;
                     r.sensor2Angle = 0;
                 }
+                //Next point at bearing 1
                 else if (next.x < curr.x && next.y == curr.y)
                 {
                     r.bearing = 1;
@@ -649,6 +599,7 @@ public class AStar extends JPanel implements ActionListener
                     r.sensor1Angle = 45;
                     r.sensor2Angle = 0;
                 }
+                //Next point at bearing 7
                 else if (next.x < curr.x && next.y > curr.y)
                 {
                     r.bearing = 7;
@@ -657,6 +608,7 @@ public class AStar extends JPanel implements ActionListener
                     r.sensor1Angle = 315;
                     r.sensor2Angle = 270;
                 }
+                //Next point at bearing 7
                 else if (next.x == curr.x && next.y > curr.y)
                 {
                     r.bearing = 7;
@@ -665,6 +617,7 @@ public class AStar extends JPanel implements ActionListener
                     r.sensor1Angle = 315;
                     r.sensor2Angle = 270;
                 }
+                //Next point at bearing 7
                 else if (next.x > curr.x && next.y > curr.y)
                 {
                     r.bearing = 7;
@@ -674,7 +627,9 @@ public class AStar extends JPanel implements ActionListener
                     r.sensor2Angle = 270;
                 }
                 break;
+            //Robot facing 45 degrees
             case 1:
+                //Next point at bearing 0
                 if (next.x > curr.x && next.y == curr.y)
                 {
                     r.bearing = 0;
@@ -683,6 +638,7 @@ public class AStar extends JPanel implements ActionListener
                     r.sensor1Angle = 0;
                     r.sensor2Angle = 315;
                 }
+                //Next point at bearing 1
                 else if (next.x > curr.x && next.y < curr.y)
                 {
                     r.bearing = 1;
@@ -690,6 +646,7 @@ public class AStar extends JPanel implements ActionListener
                     r.sensor1Angle = 45;
                     r.sensor2Angle = 0;
                 }
+                //Next point at bearing 2
                 else if (next.x == curr.x && next.y < curr.y)
                 {
                     r.bearing = 2;
@@ -698,6 +655,7 @@ public class AStar extends JPanel implements ActionListener
                     r.sensor1Angle = 90;
                     r.sensor2Angle = 45;
                 }
+                //Next point at bearing 2
                 else if (next.x < curr.x && next.y < curr.y)
                 {
                     r.bearing = 2;
@@ -706,6 +664,7 @@ public class AStar extends JPanel implements ActionListener
                     r.sensor1Angle = 90;
                     r.sensor2Angle = 45;
                 }
+                //Next point at bearing 2
                 else if (next.x < curr.x && next.y == curr.y)
                 {
                     r.bearing = 2;
@@ -714,6 +673,7 @@ public class AStar extends JPanel implements ActionListener
                     r.sensor1Angle = 90;
                     r.sensor2Angle = 45;
                 }
+                //Next point at bearing 2
                 else if (next.x < curr.x && next.y > curr.y)
                 {
                     r.bearing = 2;
@@ -722,6 +682,7 @@ public class AStar extends JPanel implements ActionListener
                     r.sensor1Angle = 90;
                     r.sensor2Angle = 45;
                 }
+                //Next point at bearing 0
                 else if (next.x == curr.x && next.y > curr.y)
                 {
                     r.bearing = 0;
@@ -730,6 +691,7 @@ public class AStar extends JPanel implements ActionListener
                     r.sensor1Angle = 0;
                     r.sensor2Angle = 315;
                 }
+                //Next point at bearing 0
                 else if (next.x > curr.x && next.y > curr.y)
                 {
                     r.bearing = 0;
@@ -739,7 +701,9 @@ public class AStar extends JPanel implements ActionListener
                     r.sensor2Angle = 315;
                 }
                 break;
+            //Robot facing 90 degrees
             case 2:
+                //Next point at bearing 1
                 if (next.x > curr.x && next.y == curr.y)
                 {
                     r.bearing = 1;
@@ -748,6 +712,7 @@ public class AStar extends JPanel implements ActionListener
                     r.sensor1Angle = 45;
                     r.sensor2Angle = 0;
                 }
+                //Next point at bearing 1
                 else if (next.x > curr.x && next.y < curr.y)
                 {
                     r.bearing = 1;
@@ -756,6 +721,7 @@ public class AStar extends JPanel implements ActionListener
                     r.sensor1Angle = 45;
                     r.sensor2Angle = 0;
                 }
+                //Next point at bearing 2
                 else if (next.x == curr.x && next.y < curr.y)
                 {
                     r.bearing = 2;
@@ -763,6 +729,7 @@ public class AStar extends JPanel implements ActionListener
                     r.sensor1Angle = 90;
                     r.sensor2Angle = 45;
                 }
+                //Next point at bearing 3
                 else if (next.x < curr.x && next.y < curr.y)
                 {
                     r.bearing = 3;
@@ -771,6 +738,7 @@ public class AStar extends JPanel implements ActionListener
                     r.sensor1Angle = 135;
                     r.sensor2Angle = 90;
                 }
+                //Next point at bearing 3
                 else if (next.x < curr.x && next.y == curr.y)
                 {
                     r.bearing = 3;
@@ -779,6 +747,7 @@ public class AStar extends JPanel implements ActionListener
                     r.sensor1Angle = 135;
                     r.sensor2Angle = 90;
                 }
+                //Next point at bearing 3
                 else if (next.x < curr.x && next.y > curr.y)
                 {
                     r.bearing = 3;
@@ -787,6 +756,7 @@ public class AStar extends JPanel implements ActionListener
                     r.sensor1Angle = 135;
                     r.sensor2Angle = 90;
                 }
+                //Next point at bearing 3
                 else if (next.x == curr.x && next.y > curr.y)
                 {
                     r.bearing = 3;
@@ -795,6 +765,7 @@ public class AStar extends JPanel implements ActionListener
                     r.sensor1Angle = 135;
                     r.sensor2Angle = 90;
                 }
+                //Next point at bearing 1
                 else if (next.x > curr.x && next.y > curr.y)
                 {
                     r.bearing = 1;
@@ -804,7 +775,9 @@ public class AStar extends JPanel implements ActionListener
                     r.sensor2Angle = 0;
                 }
                 break;
+            //Robot facing 135 degrees
             case 3:
+                //Next point at bearing 2
                 if (next.x > curr.x && next.y == curr.y)
                 {
                     r.bearing = 2;
@@ -813,6 +786,7 @@ public class AStar extends JPanel implements ActionListener
                     r.sensor1Angle = 90;
                     r.sensor2Angle = 45;
                 }
+                //Next point at bearing 2
                 else if (next.x > curr.x && next.y < curr.y)
                 {
                     r.bearing = 2;
@@ -821,6 +795,7 @@ public class AStar extends JPanel implements ActionListener
                     r.sensor1Angle = 90;
                     r.sensor2Angle = 45;
                 }
+                //Next point at bearing 2
                 else if (next.x == curr.x && next.y < curr.y)
                 {
                     r.bearing = 2;
@@ -828,7 +803,7 @@ public class AStar extends JPanel implements ActionListener
                     r.sensor0Angle = 135;
                     r.sensor1Angle = 90;
                     r.sensor2Angle = 45;
-                }
+                }//Next point at bearing 3
                 else if (next.x < curr.x && next.y < curr.y)
                 {
                     r.bearing = 3;
@@ -836,6 +811,7 @@ public class AStar extends JPanel implements ActionListener
                     r.sensor1Angle = 135;
                     r.sensor2Angle = 90;
                 }
+                //Next point at bearing 4
                 else if (next.x < curr.x && next.y == curr.y)
                 {
                     r.bearing = 4;
@@ -844,6 +820,7 @@ public class AStar extends JPanel implements ActionListener
                     r.sensor1Angle = 180;
                     r.sensor2Angle = 135;
                 }
+                //Next point at bearing 4
                 else if (next.x < curr.x && next.y > curr.y)
                 {
                     r.bearing = 4;
@@ -852,6 +829,7 @@ public class AStar extends JPanel implements ActionListener
                     r.sensor1Angle = 180;
                     r.sensor2Angle = 135;
                 }
+                //Next point at bearing 4
                 else if (next.x == curr.x && next.y > curr.y)
                 {
                     r.bearing = 4;
@@ -860,6 +838,7 @@ public class AStar extends JPanel implements ActionListener
                     r.sensor1Angle = 180;
                     r.sensor2Angle = 135;
                 }
+                //Next point at bearing 4
                 else if (next.x > curr.x && next.y > curr.y)
                 {
                     r.bearing = 4;
@@ -869,7 +848,9 @@ public class AStar extends JPanel implements ActionListener
                     r.sensor2Angle = 135;
                 }
                 break;
+            //Robot facing 180 degrees
             case 4:
+                //Next point at bearing 5
                 if (next.x > curr.x && next.y == curr.y)
                 {
                     r.bearing = 5;
@@ -878,6 +859,7 @@ public class AStar extends JPanel implements ActionListener
                     r.sensor1Angle = 225;
                     r.sensor2Angle = 180;
                 }
+                //Next point at bearing 3
                 else if (next.x > curr.x && next.y < curr.y)
                 {
                     r.bearing = 3;
@@ -886,6 +868,7 @@ public class AStar extends JPanel implements ActionListener
                     r.sensor1Angle = 135;
                     r.sensor2Angle = 90;
                 }
+                //Next point at bearing 3
                 else if (next.x == curr.x && next.y < curr.y)
                 {
                     r.bearing = 3;
@@ -894,6 +877,7 @@ public class AStar extends JPanel implements ActionListener
                     r.sensor1Angle = 135;
                     r.sensor2Angle = 90;
                 }
+                //Next point at bearing 3
                 else if (next.x < curr.x && next.y < curr.y)
                 {
                     r.bearing = 3;
@@ -902,6 +886,7 @@ public class AStar extends JPanel implements ActionListener
                     r.sensor1Angle = 135;
                     r.sensor2Angle = 90;
                 }
+                //Next point at bearing 4
                 else if (next.x < curr.x && next.y == curr.y)
                 {
                     r.bearing = 4;
@@ -909,6 +894,7 @@ public class AStar extends JPanel implements ActionListener
                     r.sensor1Angle = 180;
                     r.sensor2Angle = 135;
                 }
+                //Next point at bearing 5
                 else if (next.x < curr.x && next.y > curr.y)
                 {
                     r.bearing = 5;
@@ -917,6 +903,7 @@ public class AStar extends JPanel implements ActionListener
                     r.sensor1Angle = 225;
                     r.sensor2Angle = 180;
                 }
+                //Next point at bearing 5
                 else if (next.x == curr.x && next.y > curr.y)
                 {
                     r.bearing = 5;
@@ -925,6 +912,7 @@ public class AStar extends JPanel implements ActionListener
                     r.sensor1Angle = 225;
                     r.sensor2Angle = 180;
                 }
+                //Next point at bearing 5
                 else if (next.x > curr.x && next.y > curr.y)
                 {
                     r.bearing = 5;
@@ -934,7 +922,9 @@ public class AStar extends JPanel implements ActionListener
                     r.sensor2Angle = 180;
                 }
                 break;
+            //Robot facing 225 degrees
             case 5:
+                //Next point at bearing 6
                 if (next.x > curr.x && next.y == curr.y)
                 {
                     r.bearing = 6;
@@ -943,6 +933,7 @@ public class AStar extends JPanel implements ActionListener
                     r.sensor1Angle = 270;
                     r.sensor2Angle = 225;
                 }
+                //Next point at bearing 6
                 else if (next.x > curr.x && next.y < curr.y)
                 {
                     r.bearing = 6;
@@ -951,6 +942,7 @@ public class AStar extends JPanel implements ActionListener
                     r.sensor1Angle = 270;
                     r.sensor2Angle = 225;
                 }
+                //Next point at bearing 4
                 else if (next.x == curr.x && next.y < curr.y)
                 {
                     r.bearing = 4;
@@ -959,6 +951,7 @@ public class AStar extends JPanel implements ActionListener
                     r.sensor1Angle = 180;
                     r.sensor2Angle = 135;
                 }
+                //Next point at bearing 4
                 else if (next.x < curr.x && next.y < curr.y)
                 {
                     r.bearing = 4;
@@ -967,6 +960,7 @@ public class AStar extends JPanel implements ActionListener
                     r.sensor1Angle = 180;
                     r.sensor2Angle = 135;
                 }
+                //Next point at bearing 4
                 else if (next.x < curr.x && next.y == curr.y)
                 {
                     r.bearing = 4;
@@ -975,6 +969,7 @@ public class AStar extends JPanel implements ActionListener
                     r.sensor1Angle = 180;
                     r.sensor2Angle = 135;
                 }
+                //Next point at bearing 5
                 else if (next.x < curr.x && next.y > curr.y)
                 {
                     r.bearing = 5;
@@ -982,6 +977,7 @@ public class AStar extends JPanel implements ActionListener
                     r.sensor1Angle = 225;
                     r.sensor2Angle = 180;
                 }
+                //Next point at bearing 6
                 else if (next.x == curr.x && next.y > curr.y)
                 {
                     r.bearing = 6;
@@ -990,6 +986,7 @@ public class AStar extends JPanel implements ActionListener
                     r.sensor1Angle = 270;
                     r.sensor2Angle = 225;
                 }
+                //Next point at bearing 6
                 else if (next.x > curr.x && next.y > curr.y)
                 {
                     r.bearing = 6;
@@ -999,7 +996,9 @@ public class AStar extends JPanel implements ActionListener
                     r.sensor2Angle = 225;
                 }
                 break;
+            //Robot facing 270 degrees
             case 6:
+                //Next point at bearing 7
                 if (next.x > curr.x && next.y == curr.y)
                 {
                     r.bearing = 7;
@@ -1008,6 +1007,7 @@ public class AStar extends JPanel implements ActionListener
                     r.sensor1Angle = 315;
                     r.sensor2Angle = 270;
                 }
+                //Next point at bearing 7
                 else if (next.x > curr.x && next.y < curr.y)
                 {
                     r.bearing = 7;
@@ -1016,6 +1016,7 @@ public class AStar extends JPanel implements ActionListener
                     r.sensor1Angle = 315;
                     r.sensor2Angle = 270;
                 }
+                //Next point at bearing 7
                 else if (next.x == curr.x && next.y < curr.y)
                 {
                     r.bearing = 7;
@@ -1024,6 +1025,7 @@ public class AStar extends JPanel implements ActionListener
                     r.sensor1Angle = 315;
                     r.sensor2Angle = 270;
                 }
+                //Next point at bearing 5
                 else if (next.x < curr.x && next.y < curr.y)
                 {
                     r.bearing = 5;
@@ -1032,6 +1034,7 @@ public class AStar extends JPanel implements ActionListener
                     r.sensor1Angle = 225;
                     r.sensor2Angle = 180;
                 }
+                //Next point at bearing 5
                 else if (next.x < curr.x && next.y == curr.y)
                 {
                     r.bearing = 5;
@@ -1040,6 +1043,7 @@ public class AStar extends JPanel implements ActionListener
                     r.sensor1Angle = 225;
                     r.sensor2Angle = 180;
                 }
+                //Next point at bearing 5
                 else if (next.x < curr.x && next.y > curr.y)
                 {
                     r.bearing = 5;
@@ -1048,6 +1052,7 @@ public class AStar extends JPanel implements ActionListener
                     r.sensor1Angle = 225;
                     r.sensor2Angle = 180;
                 }
+                //Next point at bearing 6
                 else if (next.x == curr.x && next.y > curr.y)
                 {
                     r.bearing = 6;
@@ -1055,6 +1060,7 @@ public class AStar extends JPanel implements ActionListener
                     r.sensor1Angle = 270;
                     r.sensor2Angle = 225;
                 }
+                //Next point at bearing 7
                 else if (next.x > curr.x && next.y > curr.y)
                 {
                     r.bearing = 7;
@@ -1064,7 +1070,9 @@ public class AStar extends JPanel implements ActionListener
                     r.sensor2Angle = 270;
                 }
                 break;
+            //Robot facing 315 degrees
             case 7:
+                //Next point at bearing 0
                 if (next.x > curr.x && next.y == curr.y)
                 {
                     r.bearing = 0;
@@ -1073,6 +1081,7 @@ public class AStar extends JPanel implements ActionListener
                     r.sensor1Angle = 0;
                     r.sensor2Angle = 315;
                 }
+                //Next point at bearing 0
                 else if (next.x > curr.x && next.y < curr.y)
                 {
                     r.bearing = 0;
@@ -1081,6 +1090,7 @@ public class AStar extends JPanel implements ActionListener
                     r.sensor1Angle = 0;
                     r.sensor2Angle = 315;
                 }
+                //Next point at bearing 0
                 else if (next.x == curr.x && next.y < curr.y)
                 {
                     r.bearing = 0;
@@ -1089,6 +1099,7 @@ public class AStar extends JPanel implements ActionListener
                     r.sensor1Angle = 0;
                     r.sensor2Angle = 315;
                 }
+                //Next point at bearing 0
                 else if (next.x < curr.x && next.y < curr.y)
                 {
                     r.bearing = 0;
@@ -1097,6 +1108,7 @@ public class AStar extends JPanel implements ActionListener
                     r.sensor1Angle = 0;
                     r.sensor2Angle = 315;
                 }
+                //Next point at bearing 6
                 else if (next.x < curr.x && next.y == curr.y)
                 {
                     r.bearing = 6;
@@ -1105,6 +1117,7 @@ public class AStar extends JPanel implements ActionListener
                     r.sensor1Angle = 270;
                     r.sensor2Angle = 225;
                 }
+                //Next point at bearing 6
                 else if (next.x < curr.x && next.y > curr.y)
                 {
                     r.bearing = 6;
@@ -1113,6 +1126,7 @@ public class AStar extends JPanel implements ActionListener
                     r.sensor1Angle = 270;
                     r.sensor2Angle = 225;
                 }
+                //Next point at bearing 6
                 else if (next.x == curr.x && next.y > curr.y)
                 {
                     r.bearing = 6;
@@ -1121,6 +1135,7 @@ public class AStar extends JPanel implements ActionListener
                     r.sensor1Angle = 270;
                     r.sensor2Angle = 225;
                 }
+                //Next point at bearing 7
                 else if (next.x > curr.x && next.y > curr.y)
                 {
                     r.bearing = 7;
@@ -1130,9 +1145,22 @@ public class AStar extends JPanel implements ActionListener
                 }
                 break;
         }
+        //Reset the robot's sensors to batch the current bearing
         r.setSensors();
     }
 
+    /**
+     * Given a robot's current location and the location of the next point
+     * returns an int value representing the bearing necessary for the robot to
+     * move to the next point
+     *
+     * @param current A Point object representing the current point of a robot
+     * @param goal    A Point object representing the intended next movement of
+     *                a robot
+     *
+     * @return Returns an int value representing the bearing a robot needs to
+     *         face in order to move to an intended point
+     */
     public int bearingNeeded(Point current, Point goal)
     {
         if (goal.x < current.x && goal.y < current.y)
@@ -1169,39 +1197,69 @@ public class AStar extends JPanel implements ActionListener
         }
     }
 
+    /**
+     * Implemented from parent class. Whenever the timer event fires this method
+     * will be called.
+     * Contains the logic for the algorithm
+     *
+     * @param e An ActionEvent representing a tick of the timer.
+     */
     @Override
     public void actionPerformed(ActionEvent e)
     {
-        if ((params.timeLimit == 0 || movements < params.timeLimit)
-                && viewedElements < totalElements
-                && robotsCompleted != robots.size())
+        //For each robot ensure that its current coordinates and everything 
+        //within its sensors have been viewed
+        for (Robot r : robots)
         {
+            viewed[r.current.x][r.current.y] = true;
+            updateMapForward(r);
+        }
+
+        //Perform only if the time limit has not been reached and there are 
+        //still elements that need to be viewed
+        if ((params.timeLimit == 0 || movements < params.timeLimit) &&
+                viewedElements < totalElements)
+        {
+            //Perform operations for every robot
             for (Robot r : robots)
             {
+                //Exclude robots who do not have a goal or who have completed 
+                //operations
                 if (!r.finished && r.hasGoal)
                 {
+                    //Set temp variable equal to robot's bearing and adjust the 
+                    //robot's bearing for its goal.
                     int tempBearing = r.bearing;
                     adjustBearing(r);
+                    //If the robot's bearing is equal to the temp bearing the
+                    //robot can proceed forward. Otherwise its direction will 
+                    //need to be incremented further.
                     if (tempBearing == r.bearing)
                     {
+                        //If the path is not empty increment the robot's 
+                        //position
                         if (!r.path.isEmpty() && r.path.size() > 0)
                         {
                             r.current = r.path.pop();
 
                         }
+                        //Update the viewed elements and reset the robot's 
+                        //sensors. Then determine the next bearing required
                         updateMapForward(r);
                         r.setSensors();
                         int bearingNeeded = bearingNeeded(r.current, r.goal);
 
-                        if (((r.path.isEmpty() || r.path.size() == 0)
-                                && r.bearing == bearingNeeded)
-                                || (r.goal.x == r.current.x
-                                && r.goal.y == r.current.y))
+                        //Determine if the robot has a goal
+                        if (((r.path.isEmpty() || r.path.size() == 0) &&
+                                r.bearing == bearingNeeded) ||
+                                (r.goal.x == r.current.x &&
+                                r.goal.y == r.current.y))
                         {
                             r.hasGoal = false;
                         }
                     }
                 }
+                //Determine if the robot has finished its operations
                 else if (!r.finished)
                 {
                     boolean needGoal = true;
@@ -1211,49 +1269,12 @@ public class AStar extends JPanel implements ActionListener
                     }
                 }
             }
-
+            //Increment the count of movements
             movements++;
-
+            
+            //repaint the map including robot positions and sensors
             repaint();
         }
     }
 
-    @Override
-    protected void paintComponent(Graphics g)
-    {
-        super.paintComponent(g);
-        for (int i = 0; i < viewed.length; i++)
-        {
-            for (int j = 0; j < viewed[i].length; j++)
-            {
-                if (viewed[i][j] && occupied[i][j])
-                {
-                    g.setColor(Color.BLACK);
-                    g.drawLine(i, j, i, j);
-                }
-                else if (viewed[i][j])
-                {
-                    g.setColor(Color.WHITE);
-                    g.drawLine(i, j, i, j);
-                }
-                else
-                {
-                    g.setColor(Color.DARK_GRAY);
-                    g.drawLine(i, j, i, j);
-                }
-            }
-        }
-
-        Graphics2D g2 = (Graphics2D) g;
-        for (Robot r : robots)
-        {
-            g2.setColor(Color.GREEN);
-            g2.fill(r.sensor0);
-            g2.fill(r.sensor1);
-            g2.fill(r.sensor2);
-
-            g2.setColor(Color.RED);
-            g2.drawLine(r.current.x, r.current.y, r.current.x, r.current.y);
-        }
-    }
 }

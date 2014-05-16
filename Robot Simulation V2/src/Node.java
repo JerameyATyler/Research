@@ -9,11 +9,16 @@ import java.awt.Point;
 public class Node implements Comparable
 {
 
+    //Position coordinate
     private int x;
     private int y;
+
+    //Values required for A* algorithm
     private int f;
     private int g;
     private int h;
+
+    //Parent Node of the current Node 
     private Node parent;
 
     /**
@@ -26,6 +31,13 @@ public class Node implements Comparable
         this.y = 0;
     }
 
+    /**
+     * Parameter constructor for Node object. Accepts a Point object
+     * representing the Position coordinates of the node
+     *
+     * @param point A Point object representing the position coordinates of the
+     *              Node
+     */
     public Node(Point point)
     {
         this.x = (int) point.getX();
@@ -136,6 +148,11 @@ public class Node implements Comparable
         this.g = g + ((parent == null) ? 0 : parent.g);
     }
 
+    /**
+     * Set the parent of the Node
+     *
+     * @param parent A Node object representing the parent of the current Node
+     */
     public void setParent(Node parent)
     {
         this.parent = parent;
@@ -153,8 +170,7 @@ public class Node implements Comparable
      * Calculates the g value of the Node. Vertical and horizontal movements are
      * given a lower value than diagonal movements.
      *
-     * @param start Node object that corresponds to the starting node.
-     * @param goal  Node object that corresponds to the goal node.
+     * @param goal Node object that corresponds to the goal node.
      */
     public void calculateG(Node goal)
     {
@@ -172,8 +188,7 @@ public class Node implements Comparable
      * Calculates the h or heuristic value of the Node. Attempts to even out
      * movement along axes.
      *
-     * @param start Node object that corresponds to the starting node.
-     * @param goal  Node object that corresponds to the goal node.
+     * @param goal Node object that corresponds to the goal node.
      */
     public void calculateH(Node goal)
     {
