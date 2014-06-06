@@ -96,6 +96,59 @@ public final class Robot
      */
     int sensor2Angle;
 
+    //Properties for AP algorithm
+    /**
+     * Distance between the robot and the element of the environment that is
+     * currently being evaluated
+     */
+    float distance;
+    /**
+     *
+     */
+    float turn;
+    /**
+     * Velocity along the x axis
+     */
+    float vX;
+    /**
+     * Velocity along the y axis
+     */
+    float vY;
+    /**
+     * Change in vX
+     */
+    float delta_vX;
+    /**
+     * Change in vY
+     */
+    float delta_vY;
+
+    /**
+     * The net force acting on a robot
+     */
+    float netForce;
+    /*
+     * The change in position along the x axis
+     */
+    float deltaX;
+    /**
+     * The change in position along the y axis
+     */
+    float deltaY;
+    /**
+     * The coordinates of the next position for the robot
+     */
+    Point nextPoint;
+    /**
+     * Force along the x axis
+     */
+    float Fx = 0;
+    /**
+     * Force along the y axis
+     */    
+    float Fy = 0;
+    //End properties for AP algorithm
+    
     /**
      * Constructor for Robot object. Accepts A Point representing the starting
      * (x, y) coordinates of the robot, int values representing the angles of
@@ -156,7 +209,8 @@ public final class Robot
 
     /**
      * Overrides method from parent class. Creates an exact copy of a robot.
-     * @return 
+     *
+     * @return
      */
     @Override
     public Robot clone()
