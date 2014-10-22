@@ -1,4 +1,10 @@
 
+package Engine;
+
+
+import Algorithms.RandomWanderer;
+import Algorithms.PrimaryMovement;
+import Algorithms.AStar;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;

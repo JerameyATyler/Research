@@ -1,4 +1,6 @@
 
+package Engine;
+
 /**
  * Object that contains the experiments parameters.
  *

@@ -1,3 +1,4 @@
+package Engine;
 
 import java.util.Random;
 import javax.swing.JFrame;
@@ -40,8 +41,8 @@ public class RobotSim extends JFrame
     public Parameters gatherParameters()
     {
         Parameters params = new Parameters();
-        ParameterSelectionDialog selectionDialog =
-                new ParameterSelectionDialog();
+        ParameterSelectionDialog selectionDialog
+                = new ParameterSelectionDialog();
         selectionDialog.setModal(true);
         if (!selectionDialog.showDialog(params))
         {
@@ -63,18 +64,18 @@ public class RobotSim extends JFrame
      */
     public boolean[][] generateMap(Parameters params)
     {
-        boolean[][] occupied =
-                new boolean[params.environmentWidth][params.environmentHeight];
+        boolean[][] occupied
+                = new boolean[params.environmentWidth][params.environmentHeight];
 
         int totalElements = params.environmentHeight * params.environmentWidth;
 
         int occupiedElements = 0;
 
-        int neededElements =
-                (int) Math.ceil(totalElements * params.obstacleDensity);
+        int neededElements = (int) Math.ceil(totalElements
+                * params.obstacleDensity);
 
-        Random random =
-                new Random((params.seed != 0) ? params.seed : 2147483647);
+        Random random
+                = new Random((params.seed != 0) ? params.seed : 2147483647);
 
         while (neededElements > occupiedElements)
         {
@@ -83,20 +84,18 @@ public class RobotSim extends JFrame
             int width = (int) (1 + random.nextDouble() * 4);
             int height = (int) (1 + random.nextDouble() * 4);
 
-            if ((x != 0 && y != params.environmentHeight - 1) && (x !=
-                    params.environmentWidth - 1 && y != 0) && (x !=
-                    params.environmentWidth - 1 &&
-                    y != params.environmentHeight - 1) &&
-                    (x + width < params.environmentWidth) &&
-                    (y + height < params.environmentHeight))
+            if ((x != 0 && y != params.environmentHeight - 1) && (x
+                    != params.environmentWidth - 1 && y != 0) && (x
+                    != params.environmentWidth - 1 && y
+                    != params.environmentHeight - 1) && (x + width
+                    < params.environmentWidth) && (y + height
+                    < params.environmentHeight))
             {
-                for (int i = x; i < ((x + width < params.environmentWidth) ?
-                        (x +
-                        width) : params.environmentWidth); i++)
+                for (int i = x; i < ((x + width < params.environmentWidth) ? (x
+                        + width) : params.environmentWidth); i++)
                 {
-                    for (int j = y; j <
-                            ((y + height < params.environmentHeight) ?
-                            (y + height) : params.environmentHeight); j++)
+                    for (int j = y; j < ((y + height < params.environmentHeight)
+                            ? (y + height) : params.environmentHeight); j++)
                     {
                         occupied[i][j] = true;
                     }

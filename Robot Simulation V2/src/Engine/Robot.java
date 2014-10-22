@@ -1,4 +1,6 @@
 
+package Engine;
+
 import java.awt.Point;
 import java.awt.geom.Arc2D;
 import java.util.Stack;
@@ -54,9 +56,9 @@ public final class Robot
 
     /**
      * An int value representing the distance that the robot's sensors can
-     * reach.
-     * Sensor distance is a ratio to the robot's body size. Sensor distance of
-     * 10 would result in a sensor distance 10 times the robot's size.
+     * reach. Sensor distance is a ratio to the robot's body size. Sensor
+     * distance of 10 would result in a sensor distance 10 times the robot's
+     * size.
      */
     public int sensorDistance;
 
@@ -67,10 +69,10 @@ public final class Robot
      */
     public Arc2D.Double sensor0 = new Arc2D.Double(Arc2D.PIE);
     /**
-     * An int value representing the angle of sensor 0 from the robot's
-     * forward direction.
+     * An int value representing the angle of sensor 0 from the robot's forward
+     * direction.
      */
-    int sensor0Angle;
+    public int sensor0Angle;
 
     /**
      * An Arc2D.Double representing the robot's sensor at 0 degrees from the
@@ -79,10 +81,10 @@ public final class Robot
      */
     public Arc2D.Double sensor1 = new Arc2D.Double(Arc2D.PIE);
     /**
-     * An int value representing the angle of sensor 0 from the robot's
-     * forward direction.
+     * An int value representing the angle of sensor 0 from the robot's forward
+     * direction.
      */
-    int sensor1Angle;
+    public int sensor1Angle;
 
     /**
      * An Arc2D.Double representing the robot's sensor at 45 degrees from the
@@ -91,62 +93,64 @@ public final class Robot
      */
     public Arc2D.Double sensor2 = new Arc2D.Double(Arc2D.PIE);
     /**
-     * An int value representing the angle of sensor 0 from the robot's
-     * forward direction.
+     * An int value representing the angle of sensor 0 from the robot's forward
+     * direction.
      */
-    int sensor2Angle;
+    public int sensor2Angle;
 
     //Properties for AP algorithm
     /**
      * Distance between the robot and the element of the environment that is
      * currently being evaluated
      */
-    float distance;
+    public float distance;
     /**
      *
      */
-    float turn;
+    public float turn;
     /**
      * Velocity along the x axis
      */
-    float vX;
+    public float vX;
     /**
      * Velocity along the y axis
      */
-    float vY;
+    public float vY;
     /**
      * Change in vX
      */
-    float delta_vX;
+    public float delta_vX;
     /**
      * Change in vY
      */
-    float delta_vY;
+    public float delta_vY;
 
     /**
      * The net force acting on a robot
      */
-    float netForce;
+    public float netForce;
     /*
      * The change in position along the x axis
      */
-    float deltaX;
+    public float deltaX;
     /**
      * The change in position along the y axis
      */
-    float deltaY;
+    public float deltaY;
     /**
      * The coordinates of the next position for the robot
      */
-    Point nextPoint;
+    public Point nextPoint;
     /**
      * Force along the x axis
      */
-    float Fx = 0;
+    public float Fx = 0;
     /**
      * Force along the y axis
-     */    
-    float Fy = 0;
+     */
+    public float Fy = 0;
+    
+    public float v = 1;
     //End properties for AP algorithm
     
     /**

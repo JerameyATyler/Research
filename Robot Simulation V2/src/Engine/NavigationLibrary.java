@@ -1,3 +1,4 @@
+package Engine;
 
 import java.awt.Color;
 import java.awt.Graphics;
@@ -721,6 +722,8 @@ public abstract class NavigationLibrary extends JPanel implements ActionListener
 
         return false;
     }
+    
+    public abstract void navigation(Robot r);
 
     /**
      * Abstract method to be implemented in the child class. Whenever the timer
@@ -730,7 +733,34 @@ public abstract class NavigationLibrary extends JPanel implements ActionListener
      * @param e An ActionEvent representing a tick of the timer.
      */
     @Override
-    public abstract void actionPerformed(ActionEvent e);
+    public void actionPerformed(ActionEvent e)
+    {
+        
+        //For each robot ensure that its current coordinates and everything 
+        //within its sensors have been viewed
+        for (Robot r : robots)
+        {
+            viewed[r.current.x][r.current.y] = true;
+            updateMapForward();
+        }
+
+        //Perform only if the time limit has not been reached and there are 
+        //still elements that need to be viewed
+        if ((params.timeLimit == 0 || movements < params.timeLimit) &&
+                viewedElements < totalElements)
+        {
+            //Perform operations for every robot
+            for (Robot r : robots)
+            {
+                navigation(r);
+            }
+            //Increment the count of movements
+            movements++;
+            
+            //repaint the map including robot positions and sensors
+            repaint();
+        }    
+    }
 
     /**
      * Implemented from the parent class. Draws the map on the screen. Black

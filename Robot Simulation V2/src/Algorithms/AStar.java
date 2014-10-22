@@ -1,6 +1,10 @@
+package Algorithms;
 
+import Engine.NavigationLibrary;
+import Engine.Parameters;
+import Engine.Robot;
+import Engine.Node;
 import java.awt.Point;
-import java.awt.event.ActionEvent;
 import java.awt.geom.Arc2D;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -39,15 +43,15 @@ public class AStar extends NavigationLibrary
         //Update the map for sensor 0
         //Increment through the x axis
         for (int i = (((int) r.sensor0.getMinX() < 0) ? 0 : (int) r.sensor0.
-                getMinX()); i < ((r.sensor0.getMaxX() >=
-                params.environmentWidth) ? params.environmentWidth :
-                r.sensor0.getMaxX()); i++)
+                getMinX()); i
+                < ((r.sensor0.getMaxX() >= params.environmentWidth)
+                        ? params.environmentWidth : r.sensor0.getMaxX()); i++)
         {
             //Increment through the y axis
-            for (int j = (((int) r.sensor0.getMinY() < 0) ? 0 :
-                    (int) r.sensor0.getMinY()); j < ((r.sensor0.getMaxY() >=
-                    params.environmentHeight) ? params.environmentHeight :
-                    r.sensor0.getMaxY()); j++)
+            for (int j = (((int) r.sensor0.getMinY() < 0) ? 0 : (int) r.sensor0.
+                    getMinY()); j < ((r.sensor0.getMaxY()
+                    >= params.environmentHeight) ? params.environmentHeight
+                            : r.sensor0.getMaxY()); j++)
             {
                 //If a point is in the sensor's range and it has not been
                 //viewed previously, mark it as viewed
@@ -61,15 +65,15 @@ public class AStar extends NavigationLibrary
         //Update the map for sensor 1
         //Increment through the x axis
         for (int i = (((int) r.sensor1.getMinX() < 0) ? 0 : (int) r.sensor1.
-                getMinX()); i < ((r.sensor1.getMaxX() >=
-                params.environmentWidth) ? params.environmentWidth :
-                r.sensor1.getMaxX()); i++)
+                getMinX()); i
+                < ((r.sensor1.getMaxX() >= params.environmentWidth)
+                        ? params.environmentWidth : r.sensor1.getMaxX()); i++)
         {
             //Increment through the y axis
-            for (int j = (((int) r.sensor1.getMinY() < 0) ? 0 :
-                    (int) r.sensor1.getMinY()); j < ((r.sensor1.getMaxY() >=
-                    params.environmentHeight) ? params.environmentHeight :
-                    r.sensor1.getMaxY()); j++)
+            for (int j = (((int) r.sensor1.getMinY() < 0) ? 0 : (int) r.sensor1.
+                    getMinY()); j < ((r.sensor1.getMaxY()
+                    >= params.environmentHeight) ? params.environmentHeight
+                            : r.sensor1.getMaxY()); j++)
             {
                 //If a point is in the sensor's range and it has not been
                 //viewed previously, mark it as viewed
@@ -83,15 +87,15 @@ public class AStar extends NavigationLibrary
         //Update the map for sensor 2
         //Increment through the x axis
         for (int i = (((int) r.sensor2.getMinX() < 0) ? 0 : (int) r.sensor2.
-                getMinX()); i < ((r.sensor2.getMaxX() >=
-                params.environmentWidth) ? params.environmentWidth :
-                r.sensor2.getMaxX()); i++)
+                getMinX()); i
+                < ((r.sensor2.getMaxX() >= params.environmentWidth)
+                        ? params.environmentWidth : r.sensor2.getMaxX()); i++)
         {
             //Increment through the y axis
-            for (int j = (((int) r.sensor2.getMinY() < 0) ? 0 :
-                    (int) r.sensor2.getMinY()); j < ((r.sensor2.getMaxY() >=
-                    params.environmentHeight) ? params.environmentHeight :
-                    r.sensor2.getMaxY()); j++)
+            for (int j = (((int) r.sensor2.getMinY() < 0) ? 0 : (int) r.sensor2.
+                    getMinY()); j < ((r.sensor2.getMaxY()
+                    >= params.environmentHeight) ? params.environmentHeight
+                            : r.sensor2.getMaxY()); j++)
             {
                 //If a point is in the sensor's range and it has not been
                 //viewed previously, mark it as viewed
@@ -137,14 +141,14 @@ public class AStar extends NavigationLibrary
 
         //Update the map for arc
         //Increment through the x axis
-        for (int i = (((int) arc.getMinX() < 0) ? 0 : (int) arc.getMinX()); i <
-                ((arc.getMaxX() >= params.environmentWidth) ?
-                params.environmentWidth : arc.getMaxX()); i++)
+        for (int i = (((int) arc.getMinX() < 0) ? 0 : (int) arc.getMinX()); i
+                < ((arc.getMaxX() >= params.environmentWidth)
+                        ? params.environmentWidth : arc.getMaxX()); i++)
         {
             //Increment through the y axis
             for (int j = (((int) arc.getMinY() < 0) ? 0 : (int) arc.getMinY());
-                    j < ((arc.getMaxY() >= params.environmentHeight) ?
-                    params.environmentHeight : arc.getMaxY()); j++)
+                    j < ((arc.getMaxY() >= params.environmentHeight)
+                            ? params.environmentHeight : arc.getMaxY()); j++)
             {
                 //If a point is in the arc's range and it has not been
                 //viewed previously, mark it as viewed
@@ -194,9 +198,9 @@ public class AStar extends NavigationLibrary
         //Neighbor to the South
         if (parent.getY() + 1 < params.environmentHeight)
         {
-            if ((viewed[parent.getX()][parent.getY() + 1] &&
-                    !occupied[parent.getX()][parent.getY() + 1]) ||
-                    (goal == matrix[parent.getX()][parent.getY() + 1]))
+            if ((viewed[parent.getX()][parent.getY() + 1] && !occupied[parent.
+                    getX()][parent.getY() + 1]) || (goal
+                    == matrix[parent.getX()][parent.getY() + 1]))
             {
                 Node node = matrix[parent.getX()][parent.getY() + 1];
                 node.calculateG(parent);
@@ -204,12 +208,12 @@ public class AStar extends NavigationLibrary
             }
         }
         //Neighbor to the Southeast
-        if ((parent.getX() + 1 < params.environmentWidth) && (parent.getY() +
-                1 < params.environmentHeight))
+        if ((parent.getX() + 1 < params.environmentWidth) && (parent.getY() + 1
+                < params.environmentHeight))
         {
-            if ((viewed[parent.getX() + 1][parent.getY() + 1] &&
-                    !occupied[parent.getX() + 1][parent.getY() + 1]) ||
-                    (goal == matrix[parent.getX() + 1][parent.getY() + 1]))
+            if ((viewed[parent.getX() + 1][parent.getY() + 1]
+                    && !occupied[parent.getX() + 1][parent.getY() + 1]) || (goal
+                    == matrix[parent.getX() + 1][parent.getY() + 1]))
             {
                 Node node = matrix[parent.getX() + 1][parent.getY() + 1];
                 node.calculateG(parent);
@@ -219,9 +223,9 @@ public class AStar extends NavigationLibrary
         //Neighbor to the East
         if (parent.getX() + 1 < params.environmentWidth)
         {
-            if ((viewed[parent.getX() + 1][parent.getY()] &&
-                    !occupied[parent.getX() + 1][parent.getY()]) ||
-                    (goal == matrix[parent.getX() + 1][parent.getY()]))
+            if ((viewed[parent.getX() + 1][parent.getY()] && !occupied[parent.
+                    getX() + 1][parent.getY()]) || (goal == matrix[parent.getX()
+                    + 1][parent.getY()]))
             {
                 Node node = matrix[parent.getX() + 1][parent.getY()];
                 node.calculateG(parent);
@@ -229,12 +233,12 @@ public class AStar extends NavigationLibrary
             }
         }
         //Neighbor to the Northeast        
-        if ((parent.getX() + 1 < params.environmentWidth) &&
-                (parent.getY() - 1 >= 0))
+        if ((parent.getX() + 1 < params.environmentWidth) && (parent.getY() - 1
+                >= 0))
         {
-            if ((viewed[parent.getX() + 1][parent.getY() - 1] &&
-                    !occupied[parent.getX() + 1][parent.getY() - 1]) ||
-                    (goal == matrix[parent.getX() + 1][parent.getY() - 1]))
+            if ((viewed[parent.getX() + 1][parent.getY() - 1]
+                    && !occupied[parent.getX() + 1][parent.getY() - 1]) || (goal
+                    == matrix[parent.getX() + 1][parent.getY() - 1]))
             {
                 Node node = matrix[parent.getX() + 1][parent.getY() - 1];
                 node.calculateG(parent);
@@ -244,9 +248,9 @@ public class AStar extends NavigationLibrary
         //Neighbor to the North
         if (parent.getY() - 1 >= 0)
         {
-            if ((viewed[parent.getX()][parent.getY() - 1] &&
-                    !occupied[parent.getX()][parent.getY() - 1]) ||
-                    (goal == matrix[parent.getX()][parent.getY() - 1]))
+            if ((viewed[parent.getX()][parent.getY() - 1] && !occupied[parent.
+                    getX()][parent.getY() - 1]) || (goal
+                    == matrix[parent.getX()][parent.getY() - 1]))
             {
                 Node node = matrix[parent.getX()][parent.getY() - 1];
                 node.calculateG(parent);
@@ -256,9 +260,9 @@ public class AStar extends NavigationLibrary
         //Neighbor to the Northwest
         if ((parent.getX() - 1 >= 0) && (parent.getY() - 1 >= 0))
         {
-            if ((viewed[parent.getX() - 1][parent.getY() - 1] &&
-                    !occupied[parent.getX() - 1][parent.getY() - 1]) ||
-                    (goal == matrix[parent.getX() - 1][parent.getY() - 1]))
+            if ((viewed[parent.getX() - 1][parent.getY() - 1]
+                    && !occupied[parent.getX() - 1][parent.getY() - 1]) || (goal
+                    == matrix[parent.getX() - 1][parent.getY() - 1]))
             {
                 Node node = matrix[parent.getX() - 1][parent.getY() - 1];
                 node.calculateG(parent);
@@ -268,9 +272,9 @@ public class AStar extends NavigationLibrary
         //Neighbor to the West
         if (parent.getX() - 1 >= 0)
         {
-            if ((viewed[parent.getX() - 1][parent.getY()] &&
-                    !occupied[parent.getX() - 1][parent.getY()]) ||
-                    (goal == matrix[parent.getX() - 1][parent.getY()]))
+            if ((viewed[parent.getX() - 1][parent.getY()] && !occupied[parent.
+                    getX() - 1][parent.getY()]) || (goal == matrix[parent.getX()
+                    - 1][parent.getY()]))
             {
                 Node node = matrix[parent.getX() - 1][parent.getY()];
                 node.calculateG(parent);
@@ -278,12 +282,12 @@ public class AStar extends NavigationLibrary
             }
         }
         //Neighbor to the Southwest
-        if ((parent.getX() - 1 >= 0) &&
-                (parent.getY() + 1 < params.environmentHeight))
+        if ((parent.getX() - 1 >= 0) && (parent.getY() + 1
+                < params.environmentHeight))
         {
-            if ((viewed[parent.getX() - 1][parent.getY() + 1] &&
-                    !occupied[parent.getX() - 1][parent.getY() + 1]) ||
-                    (goal == matrix[parent.getX() - 1][parent.getY() + 1]))
+            if ((viewed[parent.getX() - 1][parent.getY() + 1]
+                    && !occupied[parent.getX() - 1][parent.getY() + 1]) || (goal
+                    == matrix[parent.getX() - 1][parent.getY() + 1]))
             {
                 Node node = matrix[parent.getX() - 1][parent.getY() + 1];
                 node.calculateG(parent);
@@ -304,7 +308,8 @@ public class AStar extends NavigationLibrary
      * @param node A Node object representing the end point of the path
      *
      * @return A Stack of Point objects representing the points on the map the
-     *         robot must navigate through to reach the goal from its current point
+     *         robot must navigate through to reach the goal from its current
+     *         point
      */
     private Stack<Point> createPath(Node node)
     {
@@ -380,8 +385,8 @@ public class AStar extends NavigationLibrary
                     j++)
             {
                 //Check if current coordinates are in bounds of viewed
-                if (!(x < 0 || y < 0 ||
-                        x >= viewed.length || y >= viewed[x].length))
+                if (!(x < 0 || y < 0 || x >= viewed.length || y
+                        >= viewed[x].length))
                 {
                     //If viewed at current coordinates has not been viewed, 
                     //return those coordinates as Point.
@@ -453,8 +458,8 @@ public class AStar extends NavigationLibrary
         ArrayList<Node> closedSet = new ArrayList();
         ArrayList<Node> openSet = new ArrayList();
 
-        Node[][] matrix =
-                new Node[params.environmentWidth][params.environmentHeight];
+        Node[][] matrix
+                = new Node[params.environmentWidth][params.environmentHeight];
         for (int i = 0; i < matrix.length; i++)
         {
             for (int j = 0; j < matrix[i].length; j++)
@@ -532,8 +537,8 @@ public class AStar extends NavigationLibrary
     public int nodeDistance(Node a, Node b)
     {
         //Pythagoras theorem
-        return (int) Math.sqrt((Math.abs(a.getX() - b.getX())) +
-                (Math.abs(a.getY() - b.getY())));
+        return (int) Math.sqrt((Math.abs(a.getX() - b.getX())) + (Math.abs(a.
+                getY() - b.getY())));
     }
 
     /**
@@ -545,8 +550,8 @@ public class AStar extends NavigationLibrary
     public void adjustBearing(Robot r)
     {
         //Get the point the robot needs to face
-        Point next = ((!r.path.isEmpty() || r.path.size() > 0) ?
-                r.path.peek() : r.goal);
+        Point next = ((!r.path.isEmpty() || r.path.size() > 0) ? r.path.peek()
+                : r.goal);
         //The robot's current point
         Point curr = r.current;
 
@@ -1197,84 +1202,54 @@ public class AStar extends NavigationLibrary
         }
     }
 
-    /**
-     * Implemented from parent class. Whenever the timer event fires this method
-     * will be called.
-     * Contains the logic for the algorithm
-     *
-     * @param e An ActionEvent representing a tick of the timer.
-     */
     @Override
-    public void actionPerformed(ActionEvent e)
+    public void navigation(Robot r)
     {
-        //For each robot ensure that its current coordinates and everything 
-        //within its sensors have been viewed
-        for (Robot r : robots)
+        //Exclude robots who do not have a goal or who have completed 
+        //operations
+        if (!r.finished && r.hasGoal)
         {
-            viewed[r.current.x][r.current.y] = true;
-            updateMapForward(r);
-        }
-
-        //Perform only if the time limit has not been reached and there are 
-        //still elements that need to be viewed
-        if ((params.timeLimit == 0 || movements < params.timeLimit) &&
-                viewedElements < totalElements)
-        {
-            //Perform operations for every robot
-            for (Robot r : robots)
+            //Set temp variable equal to robot's bearing and adjust the 
+            //robot's bearing for its goal.
+            int tempBearing = r.bearing;
+            adjustBearing(r);
+            //If the robot's bearing is equal to the temp bearing the
+            //robot can proceed forward. Otherwise its direction will 
+            //need to be incremented further.
+            if (tempBearing == r.bearing)
             {
-                //Exclude robots who do not have a goal or who have completed 
-                //operations
-                if (!r.finished && r.hasGoal)
+                //If the path is not empty increment the robot's 
+                //position
+                if (!r.path.isEmpty() && r.path.size() > 0)
                 {
-                    //Set temp variable equal to robot's bearing and adjust the 
-                    //robot's bearing for its goal.
-                    int tempBearing = r.bearing;
-                    adjustBearing(r);
-                    //If the robot's bearing is equal to the temp bearing the
-                    //robot can proceed forward. Otherwise its direction will 
-                    //need to be incremented further.
-                    if (tempBearing == r.bearing)
-                    {
-                        //If the path is not empty increment the robot's 
-                        //position
-                        if (!r.path.isEmpty() && r.path.size() > 0)
-                        {
-                            r.current = r.path.pop();
+                    r.current = r.path.pop();
 
-                        }
-                        //Update the viewed elements and reset the robot's 
-                        //sensors. Then determine the next bearing required
-                        updateMapForward(r);
-                        r.setSensors();
-                        int bearingNeeded = bearingNeeded(r.current, r.goal);
-
-                        //Determine if the robot has a goal
-                        if (((r.path.isEmpty() || r.path.size() == 0) &&
-                                r.bearing == bearingNeeded) ||
-                                (r.goal.x == r.current.x &&
-                                r.goal.y == r.current.y))
-                        {
-                            r.hasGoal = false;
-                        }
-                    }
                 }
-                //Determine if the robot has finished its operations
-                else if (!r.finished)
+                //Update the viewed elements and reset the robot's 
+                //sensors. Then determine the next bearing required
+                updateMapForward(r);
+                r.setSensors();
+                int bearingNeeded = bearingNeeded(r.current, r.goal);
+
+                //Determine if the robot has a goal
+                if (((r.path.isEmpty() || r.path.size() == 0) && r.bearing
+                        == bearingNeeded) || (r.goal.x == r.current.x
+                        && r.goal.y
+                        == r.current.y))
                 {
-                    boolean needGoal = true;
-                    while (needGoal)
-                    {
-                        needGoal = !acquireGoal(r.current, r);
-                    }
+                    r.hasGoal = false;
                 }
             }
-            //Increment the count of movements
-            movements++;
-            
-            //repaint the map including robot positions and sensors
-            repaint();
         }
-    }
+        //Determine if the robot has finished its operations
+        else if (!r.finished)
+        {
+            boolean needGoal = true;
+            while (needGoal)
+            {
+                needGoal = !acquireGoal(r.current, r);
+            }
+        }
 
+    }
 }
