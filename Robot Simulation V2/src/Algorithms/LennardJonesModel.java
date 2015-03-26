@@ -1,3 +1,4 @@
+
 package Algorithms;
 
 import Engine.Parameters;
@@ -46,19 +47,28 @@ public class LennardJonesModel extends NavigationLibrary
     {
         r.v *= FR;
 
+        float theta = (r.deltaX != 0) ? (float) Math.atan(r.deltaY / r.deltaX)
+                : 0;
+
         for (Robot rCurr : super.robots)
         {
-            float rDistance = (float) Math.sqrt((r.current.x + rCurr.current.x)
-                    + (r.current.y + rCurr.current.y));
-
-            float theta = (float) Math.atan(r.deltaY / r.deltaX);
-            if (rDistance <= 1.5 * R)
+            if (rCurr != r)
             {
-                r.netForce = interactionForce(R, rDistance, objectType.ROBOT);
-            }
+                float rDistance = (float) Math.sqrt(
+                        (r.current.x - rCurr.current.x)
+                        * (r.current.x - rCurr.current.x)
+                        + (r.current.y - rCurr.current.y)
+                        * (r.current.y - rCurr.current.y));
 
-            r.Fx += r.netForce * Math.cos(theta);
-            r.Fy += r.netForce * Math.sin(theta);
+                if (rDistance <= 1.5 * R)
+                {
+                    r.netForce
+                            = interactionForce(R, rDistance, objectType.ROBOT);
+                }
+
+                r.Fx += r.netForce * Math.cos(theta);
+                r.Fy += r.netForce * Math.sin(theta);
+            }
         }
 
         /*
@@ -76,7 +86,6 @@ public class LennardJonesModel extends NavigationLibrary
                     float rDistance = (float) Math.sqrt((r.current.x + i)
                             + (r.current.y + j));
 
-                    float theta = (float) Math.atan(r.deltaY / r.deltaX);
                     if (rDistance <= 1.5 * R)
                     {
                         r.netForce = interactionForce(R, rDistance,
@@ -91,14 +100,14 @@ public class LennardJonesModel extends NavigationLibrary
         /*
          * End implementation of forces from obstacles
          */
-        
+
         /*
          * Begin implementation of forces from goal
          */
-        float rDistance = (float) Math.sqrt((r.current.x + r.goal.x)
-                + (r.current.y + r.goal.y));
+        float rDistance = (float) Math.sqrt(Math.abs(Math.pow(r.current.x
+                - r.goal.x, 2))
+                + Math.abs(Math.pow(r.current.y - r.goal.y, 2)));
 
-        float theta = (float) Math.atan(r.deltaY / r.deltaX);
         if (rDistance <= 1.5 * R)
         {
             r.netForce = interactionForce(R, rDistance,
@@ -125,8 +134,32 @@ public class LennardJonesModel extends NavigationLibrary
 
         r.deltaX = r.vX * timeStep;
         r.deltaY = r.vY * timeStep;
-        r.nextPoint.x = (int) (r.current.x + r.deltaX);
-        r.nextPoint.y = (int) (r.current.y + r.deltaY);
+        if (r.current.x < r.goal.x)
+        {
+            r.nextPoint.x = (int) (r.current.x + r.deltaX);
+        }
+        else if (r.current.x > r.goal.x)
+        {
+            r.nextPoint.x = (int) (r.current.x - r.deltaX);
+        }
+        else
+        {
+            r.nextPoint.x = (int) r.current.x;
+
+        }
+        if (r.current.y < r.goal.y)
+        {
+            r.nextPoint.y = (int) (r.current.y + r.deltaY);
+        }
+        else if (r.current.y > r.goal.y)
+        {
+            r.nextPoint.y = (int) (r.current.y - r.deltaY);
+        }
+        else
+        {
+            r.nextPoint.y = (int) r.current.y;
+
+        }
     }
 
     private float interactionForce(float desiredDistance, float distance,
@@ -179,7 +212,8 @@ public class LennardJonesModel extends NavigationLibrary
     @Override
     public void navigation(Robot r)
     {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        this.acquireGoal(r.current, r);
+        computeNewLocation(r);
     }
 }
 

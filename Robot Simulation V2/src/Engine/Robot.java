@@ -111,19 +111,19 @@ public final class Robot
     /**
      * Velocity along the x axis
      */
-    public float vX;
+    public float vX = 0;
     /**
      * Velocity along the y axis
      */
-    public float vY;
+    public float vY = 0;
     /**
      * Change in vX
      */
-    public float delta_vX;
+    public float delta_vX = 0;
     /**
      * Change in vY
      */
-    public float delta_vY;
+    public float delta_vY = 0;
 
     /**
      * The net force acting on a robot
@@ -132,23 +132,23 @@ public final class Robot
     /*
      * The change in position along the x axis
      */
-    public float deltaX;
+    public float deltaX = 0;
     /**
      * The change in position along the y axis
      */
-    public float deltaY;
+    public float deltaY = 0;
     /**
      * The coordinates of the next position for the robot
      */
-    public Point nextPoint;
+    public Point nextPoint = new Point();
     /**
      * Force along the x axis
      */
-    public float Fx = 0;
+    public float Fx = 1;
     /**
      * Force along the y axis
      */
-    public float Fy = 0;
+    public float Fy = 1;
     
     public float v = 1;
     //End properties for AP algorithm

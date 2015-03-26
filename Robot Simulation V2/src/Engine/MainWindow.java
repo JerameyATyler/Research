@@ -4,7 +4,7 @@ package Engine;
 
 import Algorithms.RandomWanderer;
 import Algorithms.PrimaryMovement;
-import Algorithms.AStar;
+import Algorithms.LennardJonesModel;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -56,7 +56,7 @@ public class MainWindow extends JFrame implements ActionListener
     //Navigation algorithms
     private RandomWanderer randomPanel;
     private PrimaryMovement primaryPanel;
-    private AStar aStarPanel;
+    private LennardJonesModel aStarPanel;
     //Labels containing the metrics to be dislayed
     private JLabel randomViewed;
     private JLabel randomMovements;
@@ -105,7 +105,7 @@ public class MainWindow extends JFrame implements ActionListener
         //Navigation algorithm dependent tabs
         randomPanel = new RandomWanderer(params, occupied);
         primaryPanel = new PrimaryMovement(params, occupied);
-        aStarPanel = new AStar(params, occupied);
+        aStarPanel = new LennardJonesModel(params, occupied);
         tabbedPane.addTab("Random Wanderer", randomPanel);
         tabbedPane.addTab("Primary Movement", primaryPanel);
         tabbedPane.addTab("A* Pathfinding", aStarPanel);
